@@ -1,0 +1,280 @@
+---
+import DashboardLayout from "../../../../layouts/DashboardLayout.astro";
+import SpeakersManager from "../../../../components/meetups/SpeakersManager";
+import { db, Groups, Meetups, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers } from "astro:db";
+import { eq, and, asc, inArray } from "astro:db";
+import { formatDate } from "../../../../lib/utils";
+
+if (!Astro.locals.user) return Astro.redirect("/auth/login");
+const user = Astro.locals.user;
+const { id } = Astro.params;
+
+if (!id) return Astro.redirect("/dashboard/gatherings");
+
+const [group] = user.groupId
+  ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
+  : [];
+
+if (!group) return Astro.redirect("/dashboard");
+
+const [meetup] = await db
+  .select()
+  .from(Meetups)
+  .where(and(eq(Meetups.id, id), eq(Meetups.groupId, group.id)));
+
+if (!meetup) return Astro.redirect("/dashboard/gatherings");
+
+// Speakers — strip Date for island serialization
+const speakers = (
+  await db
+    .select()
+    .from(GatheringSpeakers)
+    .where(eq(GatheringSpeakers.gatheringId, id))
+    .orderBy(asc(GatheringSpeakers.sortOrder), asc(GatheringSpeakers.createdAt))
+).map(({ createdAt: _c, ...s }) => s);
+
+// Sessions + their speaker assignments
+const sessionsRaw = await db
+  .select()
+  .from(GatheringSessions)
+  .where(eq(GatheringSessions.gatheringId, id))
+  .orderBy(asc(GatheringSessions.sortOrder), asc(GatheringSessions.createdAt));
+
+const sessionIds = sessionsRaw.map((s) => s.id);
+const allSessionSpeakers = sessionIds.length > 0
+  ? await db
+      .select()
+      .from(GatheringSessionSpeakers)
+      .where(inArray(GatheringSessionSpeakers.sessionId, sessionIds))
+  : [];
+
+const sessions = sessionsRaw.map(({ createdAt: _c, ...s }) => ({
+  ...s,
+  speakerIds: allSessionSpeakers
+    .filter((ss) => ss.sessionId === s.id)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((ss) => ss.speakerId),
+}));
+---
+
+<DashboardLayout title={`Speakers & Agenda — ${meetup.title}`}>
+  <div class="page-header">
+    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <div class="header-row">
+      <div>
+        <h1>Speakers &amp; Agenda</h1>
+        <p class="meetup-meta">
+          {meetup.title} &bull; 📅 {formatDate(meetup.date)}
+        </p>
+      </div>
+      <a href={`/gatherings/${meetup.id}/rsvp`} class="btn btn-ghost btn-sm" target="_blank" rel="noopener">
+        View public page ↗
+      </a>
+    </div>
+  </div>
+
+  <div class="manager-wrap">
+    <SpeakersManager
+      client:load
+      gatheringId={id}
+      initialSpeakers={speakers}
+      initialSessions={sessions}
+    />
+  </div>
+</DashboardLayout>
+
+<style>
+  .page-header { margin-bottom: 1.75rem; }
+
+  .back-link {
+    font-size: var(--size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .back-link:hover { color: var(--color-primary); }
+
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  h1 { font-size: var(--size-3xl); margin-bottom: 0.25rem; }
+
+  .meetup-meta {
+    font-size: var(--size-sm);
+    color: var(--color-text-muted);
+    max-width: none;
+  }
+
+  .manager-wrap { max-width: 680px; }
+
+  /* ── SpeakersManager component styles ── */
+  :global(.speakers-manager) { display: flex; flex-direction: column; gap: 2rem; }
+
+  :global(.sm-section) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  :global(.sm-section-heading) {
+    font-size: var(--size-lg);
+    margin: 0 0 0.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  :global(.sm-empty-state) {
+    padding: 1.25rem;
+    background: var(--color-surface-warm);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  :global(.sm-empty-state p) { color: var(--color-text-muted); margin: 0; max-width: none; font-size: var(--size-sm); }
+
+  /* Speaker list */
+  :global(.sm-speaker-list),
+  :global(.sm-session-list) { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  :global(.sm-speaker-card),
+  :global(.sm-session-card) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    background: var(--color-bg);
+    flex-wrap: wrap;
+  }
+  :global(.sm-speaker-card.is-editing),
+  :global(.sm-session-card.is-editing) {
+    border-color: var(--color-primary);
+    background: var(--color-surface-warm);
+  }
+
+  :global(.sm-card-body) { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
+
+  :global(.sm-avatar) {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+    flex-shrink: 0;
+  }
+  :global(.sm-avatar-placeholder) {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; font-weight: 700; font-family: var(--font-display);
+    flex-shrink: 0;
+  }
+
+  :global(.sm-card-info) { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+  :global(.sm-card-name) { font-weight: 700; font-size: var(--size-sm); }
+  :global(.sm-card-meta) { font-size: var(--size-xs); color: var(--color-text-muted); }
+
+  /* Session card */
+  :global(.sm-session-info) { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+  :global(.sm-session-title-row) { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  :global(.sm-session-time) { font-size: var(--size-xs); font-weight: 700; color: var(--color-primary); white-space: nowrap; }
+  :global(.sm-session-title) { font-weight: 700; font-size: var(--size-sm); }
+  :global(.sm-session-speakers) { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.25rem; }
+  :global(.sm-session-speaker-chip) {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    background: var(--color-surface-warm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 0.125rem 0.5rem;
+    font-size: var(--size-xs);
+    font-weight: 600;
+  }
+  :global(.sm-chip-avatar) { width: 16px; height: 16px; border-radius: 50%; object-fit: cover; }
+
+  /* Actions */
+  :global(.sm-card-actions) { display: flex; gap: 0.375rem; align-items: center; flex-shrink: 0; }
+  :global(.sm-delete-confirm) { display: flex; align-items: center; gap: 0.5rem; font-size: var(--size-xs); color: var(--color-text-muted); font-weight: 600; }
+  :global(.btn-xs) { padding: 0.2rem 0.5rem; font-size: var(--size-xs); }
+
+  :global(.sm-btn-remove) {
+    background: none; border: none;
+    padding: 0.25rem 0.375rem;
+    font-size: var(--size-xs); font-weight: 700;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    text-decoration: underline; text-decoration-color: transparent;
+    transition: color 0.15s, text-decoration-color 0.15s;
+    font-family: inherit; white-space: nowrap;
+  }
+  :global(.sm-btn-remove:hover) { color: #c0392b; text-decoration-color: #c0392b; }
+
+  :global(.sm-add-btn) { align-self: flex-start; }
+
+  /* Form */
+  :global(.sm-form-wrap) {
+    background: var(--color-surface-warm);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-top: 0.25rem;
+  }
+  :global(.sm-form-heading) { font-size: var(--size-base); font-weight: 700; margin-bottom: 1rem; }
+  :global(.sm-form) { display: flex; flex-direction: column; gap: 1rem; }
+  :global(.sm-narrow) { max-width: 180px; }
+
+  :global(.sm-image-area) { display: flex; align-items: flex-start; gap: 1rem; }
+  :global(.sm-image-preview) { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-border); flex-shrink: 0; }
+  :global(.sm-image-controls) { display: flex; flex-direction: column; gap: 0.375rem; align-items: flex-start; }
+  :global(.sm-upload-label) { cursor: pointer; }
+  :global(.sm-file-hidden) { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0; padding: 0; }
+  :global(.sm-btn-remove-image) { background: none; border: none; font-size: var(--size-xs); color: #c0392b; cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; padding: 0; }
+
+  /* Speaker checkboxes in session form */
+  :global(.sm-speaker-checkboxes) { display: flex; flex-direction: column; gap: 0.5rem; }
+  :global(.sm-speaker-checkbox-row) {
+    display: flex; align-items: center; gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--color-border);
+    background: var(--color-bg);
+    font-size: var(--size-sm);
+    user-select: none;
+  }
+  :global(.sm-speaker-checkbox-row:has(input:checked)) {
+    border-color: var(--color-primary);
+    background: var(--color-surface-warm);
+  }
+  :global(.sm-speaker-checkbox-row input[type="checkbox"]) { flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer; }
+  :global(.sm-checkbox-avatar) { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  :global(.sm-checkbox-name) { font-weight: 600; flex: 1; }
+  :global(.sm-checkbox-meta) { font-size: var(--size-xs); color: var(--color-text-muted); }
+
+  :global(.form-actions) {
+    display: flex; gap: 0.875rem; align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+    margin-top: 0.25rem;
+  }
+
+  :global(.alert) { padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: var(--size-sm); font-weight: 600; }
+  :global(.alert-error) { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+  @media (max-width: 480px) {
+    :global(.sm-narrow) { max-width: 100%; }
+  }
+</style>

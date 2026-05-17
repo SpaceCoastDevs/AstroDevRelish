@@ -89,6 +89,11 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
                         Attendees
                       </a>
                       {!isCanceled && (
+                        <a href={`/dashboard/gatherings/${m.id}/speakers`} class="btn btn-ghost btn-sm">
+                          Speakers
+                        </a>
+                      )}
+                      {!isCanceled && (
                         <a href={`/dashboard/gatherings/${m.id}/edit`} class="btn btn-ghost btn-sm">
                           Edit
                         </a>

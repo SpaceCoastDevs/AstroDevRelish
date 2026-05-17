@@ -83,6 +83,41 @@ const ContactMessages = defineTable({
   },
 });
 
+const GatheringSpeakers = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    gatheringId: column.text(), // soft ref to Meetups.id
+    speakerName: column.text(),
+    speakerJobTitle: column.text({ optional: true }),
+    speakerCompany: column.text({ optional: true }),
+    speakerImageUrl: column.text({ optional: true }), // Cloudinary URL
+    speakerBio: column.text({ optional: true }),
+    sortOrder: column.number({ default: 0 }),
+    createdAt: column.date({ default: new Date() }),
+  },
+});
+
+const GatheringSessions = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    gatheringId: column.text(), // soft ref to Meetups.id
+    title: column.text(),
+    abstract: column.text({ optional: true }),
+    startTime: column.text({ optional: true }), // "HH:MM" 24-hour
+    sortOrder: column.number({ default: 0 }),
+    createdAt: column.date({ default: new Date() }),
+  },
+});
+
+const GatheringSessionSpeakers = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    sessionId: column.text(), // soft ref to GatheringSessions.id
+    speakerId: column.text(), // soft ref to GatheringSpeakers.id
+    sortOrder: column.number({ default: 0 }),
+  },
+});
+
 const Followers = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
@@ -161,5 +196,5 @@ const Verification = defineTable({
 });
 
 export default defineDb({
-  tables: { Groups, Meetups, RSVPs, GroupInvites, ContactMessages, Followers, User, Session, Account, Verification },
+  tables: { Groups, Meetups, RSVPs, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers, GroupInvites, ContactMessages, Followers, User, Session, Account, Verification },
 });
