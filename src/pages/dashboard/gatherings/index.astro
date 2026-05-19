@@ -33,7 +33,10 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
 <DashboardLayout title="Gatherings">
   <div class="page-header">
     <h1>Gatherings</h1>
-    <a href="/dashboard/gatherings/new" class="btn btn-primary">+ New gathering</a>
+    <div class="header-actions">
+      <a href="/dashboard/gatherings/import" class="btn btn-ghost btn-sm">Import from Meetup</a>
+      <a href="/dashboard/gatherings/new" class="btn btn-primary">+ New gathering</a>
+    </div>
   </div>
 
   {justCreated && (
@@ -174,6 +177,12 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
     gap: 1rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
   }
 
   .page-header h1 {

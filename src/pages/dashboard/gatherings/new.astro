@@ -112,7 +112,7 @@ if (Astro.request.method === "POST") {
   <div class="page-header">
     <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
     <h1>Schedule a gathering</h1>
-    <p>Fill in the details for your next gathering.</p>
+    <p>Fill in the details for your next gathering. Migrating from Meetup? <a href="/dashboard/gatherings/import" class="import-hint">Import events instead →</a></p>
   </div>
 
   <div class="form-wrap">
@@ -206,6 +206,19 @@ if (Astro.request.method === "POST") {
 
   .back-link:hover {
     color: var(--color-primary);
+  }
+
+  .import-hint {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+
+  .import-hint:hover {
+    color: var(--color-primary);
+    text-decoration-style: solid;
   }
 
   .page-header h1 {
