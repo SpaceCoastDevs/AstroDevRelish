@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { db, RSVPs, Meetups, Groups } from "astro:db";
-import { eq, and, count } from "astro:db";
+import { db, RSVPs, Meetups, Groups } from "devrelish:db";
+import { eq, and, count } from "devrelish:db";
 import { generateId } from "../../../lib/utils";
 
 export const prerender = false;

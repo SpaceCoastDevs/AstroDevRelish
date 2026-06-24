@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { db, User } from "astro:db";
-import { count } from "astro:db";
+import { db, User } from "devrelish:db";
+import { count } from "devrelish:db";
 
 export const prerender = false;
 

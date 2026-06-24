@@ -1,7 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
-import { db, User, Groups, GroupInvites } from "astro:db";
-import { eq, and, gt } from "astro:db";
+import { db, User, Groups, GroupInvites } from "devrelish:db";
+import { eq, and, gt } from "devrelish:db";
 import { generateId } from "../../lib/utils";
 
 if (!Astro.locals.user) return Astro.redirect("/login");

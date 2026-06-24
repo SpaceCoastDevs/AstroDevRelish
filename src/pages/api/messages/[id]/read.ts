@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { db, ContactMessages, Groups } from "astro:db";
-import { eq } from "astro:db";
+import { db, ContactMessages, Groups } from "devrelish:db";
+import { eq } from "devrelish:db";
 
 export const prerender = false;
 

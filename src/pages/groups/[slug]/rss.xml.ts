@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { db, Groups, Meetups, eq, and, gte, asc } from "astro:db";
+import { db, Groups, Meetups, eq, and, gte, asc } from "devrelish:db";
 import { stripMarkdown } from "../../../lib/markdown";
 
 export const GET: APIRoute = async ({ params, url }) => {

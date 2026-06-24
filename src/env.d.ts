@@ -1,6 +1,13 @@
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
+  readonly DEVRELISH_DATABASE_URL?: string;
+  readonly DEVRELISH_DATABASE_AUTH_TOKEN?: string;
+  readonly DATABASE_URL?: string;
+  readonly DATABASE_AUTH_TOKEN?: string;
+}
+
+interface ImportMetaEnv {
   readonly CLOUDINARY_CLOUD_NAME: string;
   readonly CLOUDINARY_API_KEY: string;
   readonly CLOUDINARY_API_SECRET: string;

@@ -8,7 +8,7 @@ import MeetupCard from "../meetups/MeetupCard.astro";
 import { renderMarkdown, stripMarkdown } from "../../lib/markdown";
 import { getCategoryLabel } from "../../lib/categories";
 
-import type { Groups, Meetups } from "astro:db";
+import type { Groups, Meetups } from "devrelish:db";
 
 interface Props {
   group: typeof Groups.$inferSelect;

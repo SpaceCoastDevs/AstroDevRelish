@@ -1,8 +1,18 @@
-import type { AstroIntegration } from "astro";
+/// <reference path="../devrelish-db.d.ts" />
 
-type DevRelishOptions = {
+import type { AstroIntegration } from "astro";
+import { isAbsolute, resolve } from "node:path";
+import type {} from "../devrelish-db";
+import { fileURLToPath } from "node:url";
+
+export type DevRelishOptions = {
   /** Mount path for DevRelish routes. Defaults to the site root. */
   base?: `/${string}`;
+  /**
+   * Module that exports `db`, DevRelish schema tables, and Drizzle query helpers.
+   * Defaults to DevRelish's libSQL client, but can point at a host-owned Drizzle adapter.
+   */
+  databaseModule?: string;
 };
 
 const routes = [
@@ -67,19 +77,37 @@ function mountPattern(base: string, pattern: string) {
   return pattern === "/" ? base : `${base}${pattern}`;
 }
 
+function resolveDatabaseModule(databaseModule: string | undefined, root: URL) {
+  if (!databaseModule) {
+    return fileURLToPath(new URL("./src/db/index.ts", import.meta.url));
+  }
+
+  if (databaseModule.startsWith(".") || databaseModule.startsWith("/")) {
+    return isAbsolute(databaseModule) ? databaseModule : resolve(fileURLToPath(root), databaseModule);
+  }
+
+  return databaseModule;
+}
+
 export default function devRelish(options: DevRelishOptions = {}): AstroIntegration {
   const base = normalizeBase(options.base);
 
   return {
     name: "devrelish",
     hooks: {
-      "astro:db:setup"({ extendDb }: any) {
-        extendDb({
-          configEntrypoint: new URL("../db/config.ts", import.meta.url),
-          seedEntrypoint: new URL("../db/seed.ts", import.meta.url),
+      "astro:config:setup"({ config, injectRoute, logger, updateConfig }) {
+        const databaseModule = resolveDatabaseModule(options.databaseModule, config.root);
+
+        updateConfig({
+          vite: {
+            resolve: {
+              alias: {
+                "devrelish:db": databaseModule,
+              },
+            },
+          },
         });
-      },
-      "astro:config:setup"({ injectRoute, logger }) {
+
         for (const route of routes) {
           injectRoute({ ...route, pattern: mountPattern(base, route.pattern) });
         }

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { db, User, Groups, GroupInvites } from "astro:db";
-import { eq } from "astro:db";
+import { db, User, Groups, GroupInvites } from "devrelish:db";
+import { eq } from "devrelish:db";
 
 const { token } = Astro.params;
 if (!token) return Astro.redirect("/");

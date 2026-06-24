@@ -1,7 +1,7 @@
 ---
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
-import { db, ContactMessages, Groups } from "astro:db";
-import { eq, asc, desc } from "astro:db";
+import { db, ContactMessages, Groups } from "devrelish:db";
+import { eq, asc, desc } from "devrelish:db";
 
 if (!Astro.locals.user) return Astro.redirect("/login");
 const user = Astro.locals.user;

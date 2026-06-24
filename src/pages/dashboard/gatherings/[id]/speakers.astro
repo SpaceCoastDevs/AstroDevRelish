@@ -1,8 +1,8 @@
 ---
 import DashboardLayout from "../../../../layouts/DashboardLayout.astro";
 import SpeakersManager from "../../../../components/meetups/SpeakersManager";
-import { db, Groups, Meetups, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers } from "astro:db";
-import { eq, and, asc, inArray } from "astro:db";
+import { db, Groups, Meetups, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers } from "devrelish:db";
+import { eq, and, asc, inArray } from "devrelish:db";
 import { formatDate } from "../../../../lib/utils";
 
 if (!Astro.locals.user) return Astro.redirect("/login");

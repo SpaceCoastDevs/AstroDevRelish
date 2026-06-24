@@ -7,14 +7,12 @@ DevRel(ish) is packaged as an Astro integration that injects community group, ga
 ```js
 // astro.config.mjs
 import { defineConfig } from "astro/config";
-import db from "@astrojs/db";
 import react from "@astrojs/react";
 import devRelish from "astro-devrelish";
 
 export default defineConfig({
   output: "server",
   integrations: [
-    db(),
     react(),
     devRelish({ base: "/community" }), // omit base to mount at /
   ],
@@ -43,13 +41,39 @@ Unauthenticated dashboard/admin actions redirect to `/login`, and sign-out links
 
 ## Database
 
-The schema lives in `db/config.ts`. It contains DevRelish application tables plus a lightweight `User` profile table for roles and group ownership. It no longer includes BetterAuth `Session`, `Account`, or `Verification` tables.
+DevRelish uses Drizzle directly. The default `devrelish:db` module uses the libSQL adapter and reads these environment variables:
 
-Copy or compose the exported schema into the host site's Astro DB setup, then push it with:
+- `DEVRELISH_DATABASE_URL`, falling back to `DATABASE_URL`, then `file:./devrelish.db`
+- `DEVRELISH_DATABASE_AUTH_TOKEN`, falling back to `DATABASE_AUTH_TOKEN`
 
-```sh
-astro db push --remote
+The SQLite schema lives in `astro-devrelish/db/schema`. It contains DevRelish application tables plus a lightweight `User` profile table for roles and group ownership.
+
+To use a different Drizzle adapter, pass a module that exports `db`, the DevRelish table objects, and any Drizzle query helpers used by the package:
+
+```js
+// astro.config.mjs
+devRelish({
+  databaseModule: "./src/devrelish-db.ts",
+});
 ```
+
+```ts
+// src/devrelish-db.ts
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
+import { and, asc, count, desc, eq, gt, gte, inArray, isNotNull } from "drizzle-orm";
+import * as schemaModule from "astro-devrelish/db/schema";
+
+export * from "astro-devrelish/db/schema";
+export { and, asc, count, desc, eq, gt, gte, inArray, isNotNull };
+
+export const db = drizzle(new Database("devrelish.db"), {
+  schema: schemaModule.schema,
+});
+```
+
+Use the Drizzle migration/push workflow for whichever adapter owns that module. For local libSQL development, the default client is enough once the schema has been pushed to `file:./devrelish.db`.
+
 
 ## External services
 

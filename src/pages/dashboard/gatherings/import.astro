@@ -1,8 +1,8 @@
 ---
 import DashboardLayout from '../../../layouts/DashboardLayout.astro';
 import ImportMeetupForm from '../../../components/meetups/ImportMeetupForm';
-import { db, Groups } from 'astro:db';
-import { eq } from 'astro:db';
+import { db, Groups } from "devrelish:db";
+import { eq } from "devrelish:db";
 
 if (!Astro.locals.user) return Astro.redirect('/login');
 const user = Astro.locals.user;

@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { v2 as cloudinary } from "cloudinary";
-import { db, Groups } from "astro:db";
-import { eq } from "astro:db";
+import { db, Groups } from "devrelish:db";
+import { eq } from "devrelish:db";
 
 export const prerender = false;
 

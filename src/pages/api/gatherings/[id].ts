@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { db, Meetups, Groups, RSVPs } from "astro:db";
-import { eq, and } from "astro:db";
+import { db, Meetups, Groups, RSVPs } from "devrelish:db";
+import { eq, and } from "devrelish:db";
 
 export const prerender = false;
 

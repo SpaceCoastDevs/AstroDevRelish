@@ -1,6 +1,6 @@
 ---
 import GroupPage from "../../components/groups/GroupPage.astro";
-import { db, Groups, Meetups, RSVPs, Followers, count, eq, and, gte, asc } from "astro:db";
+import { db, Groups, Meetups, RSVPs, Followers, count, eq, and, gte, asc } from "devrelish:db";
 
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect("/groups");

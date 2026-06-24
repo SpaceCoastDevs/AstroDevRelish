@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
-import { db, Groups, Meetups, RSVPs, count, eq, desc } from "astro:db";
+import { db, Groups, Meetups, RSVPs, count, eq, desc } from "devrelish:db";
 import { formatDate, formatTime } from "../../../lib/utils";
 
 if (!Astro.locals.user) return Astro.redirect("/login");

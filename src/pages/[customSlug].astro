@@ -4,7 +4,7 @@
  * Renders the group page directly so the short URL stays in the address bar.
  */
 import GroupPage from "../components/groups/GroupPage.astro";
-import { db, Groups, Meetups, RSVPs, Followers, count, eq, and, gte, asc, inArray } from "astro:db";
+import { db, Groups, Meetups, RSVPs, Followers, count, eq, and, gte, asc, inArray } from "devrelish:db";
 
 const { customSlug } = Astro.params;
 if (!customSlug) return Astro.redirect("/groups");

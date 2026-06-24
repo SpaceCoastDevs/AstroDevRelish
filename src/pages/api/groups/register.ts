@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
-import { db, Groups } from "astro:db";
+import { db, Groups } from "devrelish:db";
 import { generateId, slugify } from "../../../lib/utils";
-import { eq } from "astro:db";
+import { eq } from "devrelish:db";
 import { CATEGORIES } from "../../../lib/categories";
 
 export const prerender = false;

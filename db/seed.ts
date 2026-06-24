@@ -1,4 +1,4 @@
-import { db, Groups, Meetups, User } from "astro:db";
+import { db, Groups, Meetups, User } from "devrelish:db";
 
 export default async function seed() {
   const adminId = "admin-001";
