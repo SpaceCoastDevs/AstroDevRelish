@@ -1,8 +1,9 @@
 import { Resend } from "resend";
+import { absoluteUrl, siteName, supportEmail } from "./utils";
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
-const FROM = import.meta.env.RESEND_FROM ?? "hello@devrelish.tech";
-const SITE_NAME = "DevRel(ish)";
+const FROM = import.meta.env.DEVRELISH_FROM_EMAIL || import.meta.env.RESEND_FROM || supportEmail();
+const SITE_NAME = siteName();
 
 export async function sendFollowConfirmation({
   to,
@@ -61,11 +62,11 @@ export async function sendGatheringNotification({
     : locationParts || gathering.venue;
 
   // Send individually so each has their own unique unsubscribe link
-  const baseUrl = new URL(rsvpUrl).origin;
+  const baseUrl = new URL(rsvpUrl);
   await Promise.allSettled(
     followers.map(({ email, name, token }) => {
       const greeting = name ? `Hi ${name},` : "Hi there,";
-      const unsubscribeUrl = `${baseUrl}/follow/unsubscribe/${token}`;
+      const unsubscribeUrl = absoluteUrl(baseUrl.origin, `/follow/unsubscribe/${token}`);
       return resend.emails.send({
         from: `${SITE_NAME} <${FROM}>`,
         to: email,

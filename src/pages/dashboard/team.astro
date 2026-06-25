@@ -2,14 +2,14 @@
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { db, User, Groups, GroupInvites } from "astro:db";
 import { eq, and, gt } from "astro:db";
-import { generateId } from "../../lib/utils";
+import { absoluteUrl, generateId, withBase } from "../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
-if (!user.groupId) return Astro.redirect("/dashboard");
+if (!user.groupId) return Astro.redirect(withBase("/dashboard"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.id, user.groupId));
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 let successMsg = "";
 let errorMsg = "";
@@ -33,7 +33,7 @@ if (Astro.request.method === "POST") {
       expiresAt,
     });
 
-    newInviteUrl = `${Astro.url.origin}/invite/${token}`;
+    newInviteUrl = absoluteUrl(Astro.url.origin, `/invite/${token}`);
     successMsg = "Invite link generated! Copy it and share with your co-organizer.";
   } else if (action === "revoke_invite") {
     await db.delete(GroupInvites).where(eq(GroupInvites.groupId, user.groupId!));
@@ -62,7 +62,7 @@ const [activeInvite] = await db
   .from(GroupInvites)
   .where(and(eq(GroupInvites.groupId, user.groupId!), gt(GroupInvites.expiresAt, now)));
 
-const inviteUrl = newInviteUrl || (activeInvite ? `${Astro.url.origin}/invite/${activeInvite.id}` : "");
+const inviteUrl = newInviteUrl || (activeInvite ? absoluteUrl(Astro.url.origin, `/invite/${activeInvite.id}`) : "");
 
 function formatExpiry(d: Date) {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(d);

@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { supportEmail } from '../lib/utils';
+
 const lastUpdated = 'April 2026';
+const contactEmail = supportEmail();
+const contactHref = `mailto:${contactEmail}`;
 ---
 
 <BaseLayout
@@ -198,8 +202,8 @@ const lastUpdated = 'April 2026';
 
           <p class="rules-note">
             If you believe an organizer has misused your contact information,
-            please contact us at <a href="mailto:admin@devrelish.tech"
-              >admin@devrelish.tech</a
+            please contact us at <a href={contactHref}
+              >{contactEmail}</a
             >
             and we will investigate and take action.
           </p>
@@ -225,7 +229,7 @@ const lastUpdated = 'April 2026';
           </p>
           <p>
             You can request deletion of your RSVP record at any time by emailing
-            <a href="mailto:admin@devrelish.tech">admin@devrelish.tech</a> with the
+            <a href={contactHref}>{contactEmail}</a> with the
             email address you used to RSVP.
           </p>
         </section>
@@ -246,7 +250,7 @@ const lastUpdated = 'April 2026';
           </ul>
           <p>
             To exercise any of these rights, email
-            <a href="mailto:admin@devrelish.tech">admin@devrelish.tech</a>.
+            <a href={contactHref}>{contactEmail}</a>.
             We'll respond within 30 days.
           </p>
           <p>
@@ -263,7 +267,7 @@ const lastUpdated = 'April 2026';
             or reports of organizer misuse should be sent to:
           </p>
           <p>
-            <a href="mailto:admin@devrelish.tech">admin@devrelish.tech</a>
+            <a href={contactHref}>{contactEmail}</a>
           </p>
           <p>
             We may update this policy from time to time. If we make material

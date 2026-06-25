@@ -1,16 +1,16 @@
 ---
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, Groups, Meetups, RSVPs, count, eq, desc } from "astro:db";
-import { formatDate, formatTime } from "../../../lib/utils";
+import { formatDate, formatTime, withBase } from "../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 const meetups = await db
   .select()
@@ -34,8 +34,8 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
   <div class="page-header">
     <h1>Gatherings</h1>
     <div class="header-actions">
-      <a href="/dashboard/gatherings/import" class="btn btn-ghost btn-sm">Import from Meetup</a>
-      <a href="/dashboard/gatherings/new" class="btn btn-primary">+ New gathering</a>
+      <a href={withBase("/dashboard/gatherings/import")} class="btn btn-ghost btn-sm">Import from Meetup</a>
+      <a href={withBase("/dashboard/gatherings/new")} class="btn btn-primary">+ New gathering</a>
     </div>
   </div>
 
@@ -49,7 +49,7 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
         <div class="empty-icon" aria-hidden="true">✦</div>
         <h2>No gatherings yet</h2>
         <p>Schedule your first gathering and start collecting RSVPs!</p>
-        <a href="/dashboard/gatherings/new" class="btn btn-primary">
+        <a href={withBase("/dashboard/gatherings/new")} class="btn btn-primary">
           Create your first gathering →
         </a>
       </div>
@@ -88,16 +88,16 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
                   </td>
                   <td>
                     <div class="action-btns">
-                      <a href={`/dashboard/gatherings/${m.id}/attendees`} class="btn btn-ghost btn-sm">
+                      <a href={withBase(`/dashboard/gatherings/${m.id}/attendees`)} class="btn btn-ghost btn-sm">
                         Attendees
                       </a>
                       {!isCanceled && (
-                        <a href={`/dashboard/gatherings/${m.id}/speakers`} class="btn btn-ghost btn-sm">
+                        <a href={withBase(`/dashboard/gatherings/${m.id}/speakers`)} class="btn btn-ghost btn-sm">
                           Speakers
                         </a>
                       )}
                       {!isCanceled && (
-                        <a href={`/dashboard/gatherings/${m.id}/edit`} class="btn btn-ghost btn-sm">
+                        <a href={withBase(`/dashboard/gatherings/${m.id}/edit`)} class="btn btn-ghost btn-sm">
                           Edit
                         </a>
                       )}
@@ -132,7 +132,7 @@ const justCreated = Astro.url.searchParams.get("created") === "1";
             }
           </p>
           <div class="dialog-actions">
-            <form method="POST" action={`/api/gatherings/${m.id}/cancel`}>
+            <form method="POST" action={withBase(`/api/gatherings/${m.id}/cancel`)}>
               <button type="submit" class:list={["btn", isCanceled ? "btn-primary" : "btn-danger"]}>
                 {isCanceled ? "Yes, restore it" : "Yes, cancel it"}
               </button>

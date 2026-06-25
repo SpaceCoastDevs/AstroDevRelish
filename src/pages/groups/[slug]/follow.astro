@@ -1,14 +1,14 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Groups, Followers, eq, and } from "astro:db";
-import { generateId, groupUrl } from "../../../lib/utils";
+import { absoluteUrl, generateId, groupUrl, withBase } from "../../../lib/utils";
 import { sendFollowConfirmation } from "../../../lib/email";
 
 const { slug } = Astro.params;
-if (!slug) return Astro.redirect("/groups");
+if (!slug) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.slug, slug));
-if (!group || group.status !== "approved") return Astro.redirect("/groups");
+if (!group || group.status !== "approved") return Astro.redirect(withBase("/groups"));
 
 // GET: redirect back to the group page
 if (Astro.request.method !== "POST") return Astro.redirect(groupUrl(group));
@@ -38,8 +38,8 @@ if (!email || !emailRe.test(email)) {
     result = { state: "already_confirmed" };
   } else if (existing) {
     // Resend the confirmation email for the existing unconfirmed row
-    const confirmUrl = `${Astro.url.origin}/follow/confirm/${existing.token}`;
-    const unsubscribeUrl = `${Astro.url.origin}/follow/unsubscribe/${existing.token}`;
+    const confirmUrl = absoluteUrl(Astro.url.origin, `/follow/confirm/${existing.token}`);
+    const unsubscribeUrl = absoluteUrl(Astro.url.origin, `/follow/unsubscribe/${existing.token}`);
     try {
       await sendFollowConfirmation({ to: email, groupName: group.name, confirmUrl, unsubscribeUrl });
     } catch (e) {
@@ -56,8 +56,8 @@ if (!email || !emailRe.test(email)) {
       token,
       createdAt: new Date(),
     });
-    const confirmUrl = `${Astro.url.origin}/follow/confirm/${token}`;
-    const unsubscribeUrl = `${Astro.url.origin}/follow/unsubscribe/${token}`;
+    const confirmUrl = absoluteUrl(Astro.url.origin, `/follow/confirm/${token}`);
+    const unsubscribeUrl = absoluteUrl(Astro.url.origin, `/follow/unsubscribe/${token}`);
     try {
       await sendFollowConfirmation({ to: email, groupName: group.name, confirmUrl, unsubscribeUrl });
     } catch (e) {

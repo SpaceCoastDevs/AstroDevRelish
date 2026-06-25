@@ -1,5 +1,6 @@
 ---
 import { db, ContactMessages, count, eq, and } from "astro:db";
+import { withBase } from "../../lib/utils";
 
 interface Props {
   user: App.Locals["user"];
@@ -24,7 +25,7 @@ function isActive(href: string) {
 
 <aside class="dash-nav">
   <div class="dash-nav-inner">
-    <a href="/" class="dash-logo">
+    <a href={withBase("/")} class="dash-logo">
       DevRel<span class="logo-ish">(ish)</span>
     </a>
 
@@ -43,12 +44,12 @@ function isActive(href: string) {
         isAdmin ? (
           <ul class="dash-menu" role="list">
             <li>
-              <a href="/admin" class:list={["dash-link", { active: isActive("/admin") && path === "/admin" }]}>
+              <a href={withBase("/admin")} class:list={["dash-link", { active: isActive(withBase("/admin")) && path === withBase("/admin") }]}>
                 ✦ Pending Groups
               </a>
             </li>
             <li>
-              <a href="/admin/groups" class:list={["dash-link", { active: isActive("/admin/groups") }]}>
+              <a href={withBase("/admin/groups")} class:list={["dash-link", { active: isActive(withBase("/admin/groups")) }]}>
                 ◈ All Groups
               </a>
             </li>
@@ -56,22 +57,22 @@ function isActive(href: string) {
         ) : (
           <ul class="dash-menu" role="list">
             <li>
-              <a href="/dashboard" class:list={["dash-link", { active: path === "/dashboard" }]}>
+              <a href={withBase("/dashboard")} class:list={["dash-link", { active: path === withBase("/dashboard") }]}>
                 ◎ Overview
               </a>
             </li>
             <li>
-              <a href="/dashboard/group" class:list={["dash-link", { active: isActive("/dashboard/group") }]}>
+              <a href={withBase("/dashboard/group")} class:list={["dash-link", { active: isActive(withBase("/dashboard/group")) }]}>
                 ◈ My Group
               </a>
             </li>
             <li>
-              <a href="/dashboard/gatherings" class:list={["dash-link", { active: isActive("/dashboard/gatherings") }]}>
+              <a href={withBase("/dashboard/gatherings")} class:list={["dash-link", { active: isActive(withBase("/dashboard/gatherings")) }]}>
                 ✦ Gatherings
               </a>
             </li>
             <li>
-              <a href="/dashboard/messages" class:list={["dash-link", { active: isActive("/dashboard/messages") }]}>
+              <a href={withBase("/dashboard/messages")} class:list={["dash-link", { active: isActive(withBase("/dashboard/messages")) }]}>
                 <span class="nav-link-inner">
                   ✉ Messages
                   {unreadMessages > 0 && <span class="nav-badge">{unreadMessages}</span>}
@@ -79,7 +80,7 @@ function isActive(href: string) {
               </a>
             </li>
             <li>
-              <a href="/dashboard/team" class:list={["dash-link", { active: isActive("/dashboard/team") }]}>
+              <a href={withBase("/dashboard/team")} class:list={["dash-link", { active: isActive(withBase("/dashboard/team")) }]}>
                 ◎ Team
               </a>
             </li>
@@ -89,9 +90,9 @@ function isActive(href: string) {
     </nav>
 
     <div class="dash-nav-footer">
-      <a href="/" class="dash-link dash-link-sm">← Public site</a>
-      <a href="/how-it-works" class="dash-link dash-link-sm">? How it works</a>
-      <a href="/logout" class="dash-link dash-link-sm">Sign out</a>
+      <a href={withBase("/")} class="dash-link dash-link-sm">← Public site</a>
+      <a href={withBase("/how-it-works")} class="dash-link dash-link-sm">? How it works</a>
+      <a href={withBase("/logout")} class="dash-link dash-link-sm">Sign out</a>
     </div>
   </div>
 </aside>

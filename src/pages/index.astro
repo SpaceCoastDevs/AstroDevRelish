@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GroupCard from '../components/groups/GroupCard.astro';
 import GatheringCardCompact from '../components/meetups/GatheringCardCompact.astro';
+import { withBase } from '../lib/utils';
 import {
   db,
   Groups,
@@ -84,10 +85,10 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
           cities, and wherever your people happen to be.
         </p>
         <div class="hero-actions">
-          <a href="/gatherings" class="btn btn-primary btn-lg"
+          <a href={withBase("/gatherings")} class="btn btn-primary btn-lg"
             >Find a gathering →</a
           >
-          <a href="/groups/register" class="btn btn-ghost btn-lg"
+          <a href={withBase("/groups/register")} class="btn btn-ghost btn-lg"
             >Start a group</a
           >
         </div>
@@ -146,7 +147,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
     <div class="container">
       <div class="section-header">
         <h2>Upcoming gatherings</h2>
-        <a href="/gatherings" class="btn btn-ghost">See all →</a>
+        <a href={withBase("/gatherings")} class="btn btn-ghost">See all →</a>
       </div>
 
       {
@@ -154,7 +155,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
           <div class="empty-state">
             <p>
               No gatherings scheduled yet — check back soon, or{' '}
-              <a href="/groups/register">start a group</a>.
+              <a href={withBase("/groups/register")}>start a group</a>.
             </p>
           </div>
         ) : (
@@ -191,7 +192,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
         <div class="container">
           <div class="section-header">
             <h2>Find a group near you</h2>
-            <a href="/groups" class="btn btn-ghost">
+            <a href={withBase("/groups")} class="btn btn-ghost">
               See all groups →
             </a>
           </div>
@@ -229,7 +230,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
           you can start a group for your community. Fill out a quick form and
           we'll get you set up.
         </p>
-        <a href="/groups/register" class="btn btn-secondary btn-lg"
+        <a href={withBase("/groups/register")} class="btn btn-secondary btn-lg"
           >Start a group →</a
         >
       </div>

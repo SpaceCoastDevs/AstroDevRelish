@@ -2,9 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { db, User, Groups, GroupInvites } from "astro:db";
 import { eq } from "astro:db";
+import { withBase } from "../../lib/utils";
 
 const { token } = Astro.params;
-if (!token) return Astro.redirect("/");
+if (!token) return Astro.redirect(withBase("/"));
 
 const [invite] = await db.select().from(GroupInvites).where(eq(GroupInvites.id, token));
 
@@ -27,7 +28,7 @@ type Result =
 let result: Result | null = null;
 
 if (isValid && Astro.request.method === "POST") {
-  if (!user) return Astro.redirect(`/login?redirect=/invite/${token}`);
+  if (!user) return Astro.redirect(withBase(`/login?redirect=${encodeURIComponent(withBase(`/invite/${token}`))}`));
 
   if (user.groupId === invite.groupId) {
     result = { type: "error", message: "You're already a member of this group." };
@@ -36,7 +37,7 @@ if (isValid && Astro.request.method === "POST") {
   } else {
     await db.update(User).set({ groupId: invite.groupId }).where(eq(User.id, user.id));
     await db.delete(GroupInvites).where(eq(GroupInvites.id, token));
-    return Astro.redirect("/dashboard?joined=1");
+    return Astro.redirect(withBase("/dashboard?joined=1"));
   }
 }
 ---
@@ -55,7 +56,7 @@ if (isValid && Astro.request.method === "POST") {
                 ? "This invite link has expired. Ask your organizer to generate a new one."
                 : "This invite link is invalid or has already been used."}
             </p>
-            <a href="/" class="btn btn-ghost">Go to homepage →</a>
+            <a href={withBase("/")} class="btn btn-ghost">Go to homepage →</a>
           </div>
 
         ) : user ? (
@@ -84,7 +85,7 @@ if (isValid && Astro.request.method === "POST") {
             )}
 
             <p class="switch-hint">
-              Wrong account? <a href="/logout">Sign out</a> first.
+              Wrong account? <a href={withBase("/logout")}>Sign out</a> first.
             </p>
           </div>
 
@@ -98,7 +99,7 @@ if (isValid && Astro.request.method === "POST") {
               <div class="choice-section">
                 <h2>Sign in to accept</h2>
                 <p>DevRel(ish) uses the host site's existing authentication. Sign in with your site account, then return to accept this invite.</p>
-                <a href={`/login?redirect=/invite/${token}`} class="btn btn-primary">
+                <a href={withBase(`/login?redirect=${encodeURIComponent(withBase(`/invite/${token}`))}`)} class="btn btn-primary">
                   Sign in to accept →
                 </a>
               </div>

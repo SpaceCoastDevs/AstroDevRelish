@@ -1,17 +1,17 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Followers, Groups, eq } from "astro:db";
-import { groupUrl } from "../../../lib/utils";
+import { groupUrl, withBase } from "../../../lib/utils";
 
 const { token } = Astro.params;
-if (!token) return Astro.redirect("/groups");
+if (!token) return Astro.redirect(withBase("/groups"));
 
 const [follower] = await db.select().from(Followers).where(eq(Followers.token, token));
 
 type State = "confirmed" | "already_confirmed" | "invalid";
 let state: State;
 let groupName = "";
-let groupHref = "/groups";
+let groupHref = withBase("/groups");
 
 if (!follower) {
   state = "invalid";
@@ -19,12 +19,12 @@ if (!follower) {
   state = "already_confirmed";
   const [group] = await db.select().from(Groups).where(eq(Groups.id, follower.groupId));
   groupName = group?.name ?? "";
-  groupHref = group ? groupUrl(group) : "/groups";
+  groupHref = group ? groupUrl(group) : withBase("/groups");
 } else {
   await db.update(Followers).set({ confirmed: true }).where(eq(Followers.token, token));
   const [group] = await db.select().from(Groups).where(eq(Groups.id, follower.groupId));
   groupName = group?.name ?? "";
-  groupHref = group ? groupUrl(group) : "/groups";
+  groupHref = group ? groupUrl(group) : withBase("/groups");
   state = "confirmed";
 }
 ---
@@ -57,7 +57,7 @@ if (!follower) {
             <div class="result-icon error-icon" aria-hidden="true">✕</div>
             <h1>Link not found</h1>
             <p>This confirmation link is invalid or has expired. Try subscribing again from the group page.</p>
-            <a href="/groups" class="btn btn-ghost">Browse groups →</a>
+            <a href={withBase("/groups")} class="btn btn-ghost">Browse groups →</a>
           </>
         )}
 

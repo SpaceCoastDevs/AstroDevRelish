@@ -1,5 +1,5 @@
 ---
-import { formatTime, osmUrl, groupUrl } from "../../lib/utils";
+import { formatTime, osmUrl, groupUrl, withBase } from "../../lib/utils";
 import { renderMarkdown } from "../../lib/markdown";
 
 interface Props {
@@ -70,7 +70,7 @@ const locationLine = eventContext
   {tagList.length > 0 && (
     <div class="tag-list">
       {tagList.map(tag => (
-        <a href={`/gatherings?tag=${encodeURIComponent(tag)}`} class="tag-chip">{tag}</a>
+        <a href={withBase(`/gatherings?tag=${encodeURIComponent(tag)}`)} class="tag-chip">{tag}</a>
       ))}
     </div>
   )}
@@ -88,7 +88,7 @@ const locationLine = eventContext
       )}
     </div>
     {!isCanceled && !isFull && (
-      <a href={`/gatherings/${id}/rsvp`} class="btn btn-primary btn-sm">RSVP →</a>
+      <a href={withBase(`/gatherings/${id}/rsvp`)} class="btn btn-primary btn-sm">RSVP →</a>
     )}
   </div>
 </article>

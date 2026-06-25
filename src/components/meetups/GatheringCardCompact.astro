@@ -1,5 +1,5 @@
 ---
-import { formatTime, osmUrl } from "../../lib/utils";
+import { formatTime, osmUrl, withBase } from "../../lib/utils";
 
 interface Props {
   id: string;
@@ -48,7 +48,7 @@ const locationLine = eventContext
       ? <span class="badge badge-full">Full</span>
       : <span class="g-spots"><strong>{spotsLeft}</strong> of {capacity} spots left</span>
     }
-    {!isFull && <a href={`/gatherings/${id}/rsvp`} class="btn btn-primary btn-sm">RSVP →</a>}
+    {!isFull && <a href={withBase(`/gatherings/${id}/rsvp`)} class="btn btn-primary btn-sm">RSVP →</a>}
   </div>
 </article>
 

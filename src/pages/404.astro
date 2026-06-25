@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/utils";
 ---
 
 <BaseLayout
@@ -29,14 +30,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <div class="suggestions">
         <p class="suggestions-label">While you're here, maybe you were looking for:</p>
         <ul>
-          <li><a href="/groups">Browse all groups</a> — find your people</li>
-          <li><a href="/gatherings">Upcoming gatherings</a> — see what's on</li>
-          <li><a href="/groups/register">Start a group</a> — be the one who did</li>
-          <li><a href="/how-it-works">How it works</a> — the orientation session</li>
+          <li><a href={withBase("/groups")}>Browse all groups</a> — find your people</li>
+          <li><a href={withBase("/gatherings")}>Upcoming gatherings</a> — see what's on</li>
+          <li><a href={withBase("/groups/register")}>Start a group</a> — be the one who did</li>
+          <li><a href={withBase("/how-it-works")}>How it works</a> — the orientation session</li>
         </ul>
       </div>
 
-      <a href="/" class="btn btn-primary home-btn">Take me home →</a>
+      <a href={withBase("/")} class="btn btn-primary home-btn">Take me home →</a>
 
       <p class="fine-print">
         If you followed a link to get here, it may have moved.

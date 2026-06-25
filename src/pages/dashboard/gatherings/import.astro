@@ -3,20 +3,21 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro';
 import ImportMeetupForm from '../../../components/meetups/ImportMeetupForm';
 import { db, Groups } from 'astro:db';
 import { eq } from 'astro:db';
+import { withBase } from '../../../lib/utils';
 
-if (!Astro.locals.user) return Astro.redirect('/login');
+if (!Astro.locals.user) return Astro.redirect(withBase('/login'));
 const user = Astro.locals.user;
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect('/dashboard');
+if (!group) return Astro.redirect(withBase('/dashboard'));
 ---
 
 <DashboardLayout title="Import from Meetup">
   <div class="page-header">
-    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <a href={withBase("/dashboard/gatherings")} class="back-link">← Back to gatherings</a>
     <h1>Import from Meetup</h1>
     <p class="page-subtitle">
       Import upcoming events from a Meetup.com group directly into <strong

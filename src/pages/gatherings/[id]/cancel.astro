@@ -2,21 +2,22 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Meetups, RSVPs, Groups, eq, and } from "astro:db";
 import { sendRsvpCancelLink } from "../../../lib/email";
+import { absoluteUrl, withBase } from "../../../lib/utils";
 
 const { id } = Astro.params;
-if (!id) return Astro.redirect("/groups");
+if (!id) return Astro.redirect(withBase("/groups"));
 
 const [meetup] = await db.select().from(Meetups).where(eq(Meetups.id, id));
-if (!meetup) return Astro.redirect("/groups");
+if (!meetup) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.id, meetup.groupId));
 if (!group || (group.status !== "approved" && group.status !== "closed")) {
-  return Astro.redirect("/groups");
+  return Astro.redirect(withBase("/groups"));
 }
 
 // Past or cancelled gatherings can't have RSVPs cancelled
 if (meetup.status === "canceled" || meetup.date < new Date()) {
-  return Astro.redirect(`/gatherings/${id}/rsvp`);
+  return Astro.redirect(withBase(`/gatherings/${id}/rsvp`));
 }
 
 type State = "idle" | "sent";
@@ -33,7 +34,7 @@ if (Astro.request.method === "POST") {
       .where(and(eq(RSVPs.meetupId, id), eq(RSVPs.email, email)));
 
     if (rsvp?.cancelToken) {
-      const cancelUrl = `${Astro.url.origin}/gatherings/${id}/cancel/${rsvp.cancelToken}`;
+      const cancelUrl = absoluteUrl(Astro.url.origin, `/gatherings/${id}/cancel/${rsvp.cancelToken}`);
       try {
         await sendRsvpCancelLink({
           to: email,
@@ -66,7 +67,7 @@ if (Astro.request.method === "POST") {
               Click it to remove your spot.
             </p>
             <p class="hint">Didn't get it? Check your spam folder, or double-check you used the same email when you registered.</p>
-            <a href={`/gatherings/${id}/rsvp`} class="btn btn-ghost">← Back to event</a>
+            <a href={withBase(`/gatherings/${id}/rsvp`)} class="btn btn-ghost">← Back to event</a>
           </>
         ) : (
           <>
@@ -94,7 +95,7 @@ if (Astro.request.method === "POST") {
               </button>
             </form>
 
-            <a href={`/gatherings/${id}/rsvp`} class="back-link">← Back to event</a>
+            <a href={withBase(`/gatherings/${id}/rsvp`)} class="back-link">← Back to event</a>
           </>
         )}
 

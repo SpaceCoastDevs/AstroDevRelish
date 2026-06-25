@@ -3,16 +3,18 @@ import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, Groups } from "astro:db";
 import { eq } from "astro:db";
 import { CATEGORIES } from "../../../lib/categories";
-import { groupUrl } from "../../../lib/utils";
+import { displayBaseUrl, displaySiteUrl, groupUrl, withBase } from "../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
+
+const shortUrlBase = displayBaseUrl(Astro.url.origin);
 
 // Slugs that cannot be used as custom short URLs (reserved by the app's routing)
 const RESERVED_SLUGS = new Set([
@@ -196,13 +198,13 @@ if (Astro.request.method === "POST") {
     <div class="form-card">
       <h3>Short URL <span class="optional-label">(optional)</span></h3>
       <p class="card-desc">
-        Give your group a memorable link at <strong>devrelish.tech/your-slug</strong> — shorter and easier to share than the full URL.
+        Give your group a memorable link at <strong>{displaySiteUrl(Astro.url.origin, "/your-slug")}</strong> — shorter and easier to share than the full URL.
       </p>
 
       <div class="form-group">
         <label for="customSlug">Custom short URL</label>
         <div class="slug-input-wrap">
-          <span class="slug-prefix">devrelish.tech/</span>
+          <span class="slug-prefix">{shortUrlBase}/</span>
           <input
             id="customSlug" name="customSlug" type="text"
             value={group.customSlug ?? ""}
@@ -216,7 +218,7 @@ if (Astro.request.method === "POST") {
           Lowercase letters, numbers, and hyphens only. Leave blank to use the default URL
           (<code>/groups/{group.slug}</code>).
           {group.customSlug && (
-            <> Your current short URL: <a href={`/${group.customSlug}`} target="_blank" rel="noopener"><strong>devrelish.tech/{group.customSlug}</strong></a></>
+            <> Your current short URL: <a href={withBase(`/${group.customSlug}`)} target="_blank" rel="noopener"><strong>{displaySiteUrl(Astro.url.origin, `/${group.customSlug}`)}</strong></a></>
           )}
         </span>
       </div>

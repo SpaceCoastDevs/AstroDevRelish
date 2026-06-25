@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { withBase } from "../../lib/utils";
 
 interface Speaker {
   id: string;
@@ -138,7 +139,7 @@ export default function SpeakersManager({ gatheringId, initialSpeakers, initialS
     try {
       const fd = new FormData();
       fd.append("image", file);
-      const res = await fetch("/api/upload/speaker-image", { method: "POST", body: fd });
+      const res = await fetch(withBase("/api/upload/speaker-image"), { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
       setSpeakerForm((f) => ({ ...f, speakerImageUrl: data.url }));
@@ -161,8 +162,8 @@ export default function SpeakersManager({ gatheringId, initialSpeakers, initialS
     setSpeakerError("");
     try {
       const url = editingSpeakerId
-        ? `/api/gatherings/${gatheringId}/speakers/${editingSpeakerId}`
-        : `/api/gatherings/${gatheringId}/speakers`;
+        ? withBase(`/api/gatherings/${gatheringId}/speakers/${editingSpeakerId}`)
+        : withBase(`/api/gatherings/${gatheringId}/speakers`);
       const method = editingSpeakerId ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
@@ -186,7 +187,7 @@ export default function SpeakersManager({ gatheringId, initialSpeakers, initialS
 
   async function handleDeleteSpeaker(speakerId: string) {
     try {
-      const res = await fetch(`/api/gatherings/${gatheringId}/speakers/${speakerId}`, { method: "DELETE" });
+      const res = await fetch(withBase(`/api/gatherings/${gatheringId}/speakers/${speakerId}`), { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       setSpeakers((prev) => prev.filter((s) => s.id !== speakerId));
       // Remove speaker from any sessions in local state too
@@ -254,8 +255,8 @@ export default function SpeakersManager({ gatheringId, initialSpeakers, initialS
     setSessionError("");
     try {
       const url = editingSessionId
-        ? `/api/gatherings/${gatheringId}/sessions/${editingSessionId}`
-        : `/api/gatherings/${gatheringId}/sessions`;
+        ? withBase(`/api/gatherings/${gatheringId}/sessions/${editingSessionId}`)
+        : withBase(`/api/gatherings/${gatheringId}/sessions`);
       const method = editingSessionId ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
@@ -279,7 +280,7 @@ export default function SpeakersManager({ gatheringId, initialSpeakers, initialS
 
   async function handleDeleteSession(sessionId: string) {
     try {
-      const res = await fetch(`/api/gatherings/${gatheringId}/sessions/${sessionId}`, { method: "DELETE" });
+      const res = await fetch(withBase(`/api/gatherings/${gatheringId}/sessions/${sessionId}`), { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
       setDeleteSessionConfirm(null);

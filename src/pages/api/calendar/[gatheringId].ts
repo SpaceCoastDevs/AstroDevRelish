@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { db, Meetups, Groups } from "astro:db";
 import { eq } from "astro:db";
+import { absoluteUrl, siteName, siteOrigin } from "../../../lib/utils";
 
 export const prerender = false;
 
@@ -77,13 +78,14 @@ function buildICS(
   const dtend = floatingDT(meetup.date, `${pad(endHH)}:${pad(mm)}`);
 
   const location = [meetup.venue, meetup.address].filter(Boolean).join(", ");
-  const eventUrl = `${origin}/gatherings/${meetup.id}/rsvp`;
+  const eventUrl = absoluteUrl(origin, `/gatherings/${meetup.id}/rsvp`);
+  const host = new URL(siteOrigin(origin)).host;
   const description = `${meetup.description}\n\nHosted by ${group.name}\nMore info: ${eventUrl}`;
 
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//DevRel(ish)//devrelish.tech//EN",
+    `PRODID:-//${escapeICS(siteName())}//${escapeICS(host)}//EN`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
@@ -93,7 +95,7 @@ function buildICS(
     `DESCRIPTION:${escapeICS(description)}`,
     `LOCATION:${escapeICS(location)}`,
     `URL:${eventUrl}`,
-    `UID:${meetup.id}@devrelish.tech`,
+    `UID:${meetup.id}@${host}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ];

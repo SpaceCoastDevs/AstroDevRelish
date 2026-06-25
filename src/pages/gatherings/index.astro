@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import GatheringCard from "../../components/meetups/GatheringCard.astro";
 import { db, Groups, Meetups, RSVPs, count, eq, and, gte, asc, inArray } from "astro:db";
 import { CATEGORIES, getCategoryLabel } from "../../lib/categories";
+import { withBase } from "../../lib/utils";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -74,7 +75,7 @@ function clearUrl() {
   params.delete("city");
   params.delete("event");
   const qs = params.toString();
-  return `/gatherings${qs ? `?${qs}` : ""}`;
+  return withBase(`/gatherings${qs ? `?${qs}` : ""}`);
 }
 ---
 
@@ -108,7 +109,7 @@ function clearUrl() {
                 params.delete("tag");
                 return (
                   <a
-                    href={`/gatherings?${params}`}
+                    href={withBase(`/gatherings?${params}`)}
                     class:list={["filter-chip", { active: c.slug === activeCategory }]}
                   >{c.label}</a>
                 );
@@ -127,7 +128,7 @@ function clearUrl() {
                 params.delete("city");
                 return (
                   <a
-                    href={`/gatherings?${params}`}
+                    href={withBase(`/gatherings?${params}`)}
                     class:list={["filter-chip", { active: ev === activeEvent }]}
                   >{ev}</a>
                 );
@@ -146,7 +147,7 @@ function clearUrl() {
                 params.delete("event");
                 return (
                   <a
-                    href={`/gatherings?${params}`}
+                    href={withBase(`/gatherings?${params}`)}
                     class:list={["filter-chip", { active: c === activeCity }]}
                   >{c}</a>
                 );
@@ -164,7 +165,7 @@ function clearUrl() {
                 const params = new URLSearchParams({ ...Object.fromEntries(Astro.url.searchParams), tag });
                 return (
                   <a
-                    href={`/gatherings?${params}`}
+                    href={withBase(`/gatherings?${params}`)}
                     class:list={["filter-chip", { active: tag === activeTag }]}
                   >{tag}</a>
                 );
@@ -187,7 +188,7 @@ function clearUrl() {
           {activeEvent && <>{activeCategory ? " · " : ""} event: <strong>{activeEvent}</strong></>}
           {activeCity && <>{(activeCategory || activeEvent) ? " · " : ""} city: <strong>{activeCity}</strong></>}
           {activeTag && <>{(activeCategory || activeEvent || activeCity) ? " · " : ""} topic: <strong>{activeTag}</strong></>}
-          {" · "}<a href="/gatherings">Clear filters</a>
+          {" · "}<a href={withBase("/gatherings")}>Clear filters</a>
         </p>
       )}
 
@@ -197,13 +198,13 @@ function clearUrl() {
           {hasFilters ? (
             <>
               <h2>No matching gatherings</h2>
-              <p><a href="/gatherings">Clear filters</a> to see all upcoming gatherings.</p>
+              <p><a href={withBase("/gatherings")}>Clear filters</a> to see all upcoming gatherings.</p>
             </>
           ) : (
             <>
               <h2>No gatherings scheduled yet</h2>
               <p>
-                Check back soon, or <a href="/groups">browse the groups</a> to follow ones you care about.
+                Check back soon, or <a href={withBase("/groups")}>browse the groups</a> to follow ones you care about.
               </p>
             </>
           )}
@@ -244,7 +245,7 @@ function clearUrl() {
     <div class="container">
       <p>
         Organizing a gathering?{" "}
-        <a href="/groups/register">Start a group →</a>
+        <a href={withBase("/groups/register")}>Start a group →</a>
       </p>
     </div>
   </section>

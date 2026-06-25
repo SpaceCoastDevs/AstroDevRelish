@@ -16,7 +16,7 @@ interface Props {
 
 import { stripMarkdown } from "../../lib/markdown";
 import { getCategoryLabel } from "../../lib/categories";
-import { groupUrl } from "../../lib/utils";
+import { groupUrl, withBase } from "../../lib/utils";
 
 const { name, slug, customSlug, city, region, country, tagline, category, tags, description, upcomingCount = 0 } = Astro.props;
 const href = groupUrl({ slug, customSlug });
@@ -36,7 +36,7 @@ const snippet = plain.length > 140 ? plain.slice(0, 140) + "…" : plain;
     <div class="group-icon" aria-hidden="true">◈</div>
     <div>
       {category && (
-        <a href={`/groups?category=${encodeURIComponent(category)}`} class="category-badge">{getCategoryLabel(category) ?? category}</a>
+        <a href={withBase(`/groups?category=${encodeURIComponent(category)}`)} class="category-badge">{getCategoryLabel(category) ?? category}</a>
       )}
       <h3 class="group-name">
         <a href={href}>{name}</a>
@@ -51,7 +51,7 @@ const snippet = plain.length > 140 ? plain.slice(0, 140) + "…" : plain;
   {tagList.length > 0 && (
     <div class="tag-list">
       {tagList.map(tag => (
-        <a href={`/groups?tag=${encodeURIComponent(tag)}`} class="tag-chip">{tag}</a>
+        <a href={withBase(`/groups?tag=${encodeURIComponent(tag)}`)} class="tag-chip">{tag}</a>
       ))}
     </div>
   )}

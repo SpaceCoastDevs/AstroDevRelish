@@ -12,16 +12,23 @@ import react from "@astrojs/react";
 import devRelish from "astro-devrelish";
 
 export default defineConfig({
+  site: "https://example.com",
   output: "server",
   integrations: [
     db(),
     react(),
-    devRelish({ base: "/community" }), // omit base to mount at /
+    devRelish({
+      base: "/community", // omit base to mount at /
+      supportEmail: "admin@example.com",
+      fromEmail: "hello@example.com",
+    }),
   ],
 });
 ```
 
 The integration injects its pages and API endpoints under the configured `base` path. For example, `base: "/community"` mounts `/community/groups`, `/community/gatherings`, `/community/dashboard`, and `/community/api/*`.
+
+DevRelish derives its public origin from Astro's `site` config, then falls back to the incoming request origin. `siteUrl` is still available as an integration option when the DevRelish public URL needs to differ from `site`. `supportEmail` is shown in policy/contact copy, and `fromEmail` controls the Resend sender address. `siteName` is also available if the host site wants to override the default `DevRel(ish)` label in transactional email.
 
 ## Auth model
 

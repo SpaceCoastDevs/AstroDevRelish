@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { withBase } from "../../lib/utils";
 
 interface Props {
   meetupId: string;
@@ -35,7 +36,7 @@ export default function RsvpForm({ meetupId, meetupTitle, spotsLeft }: Props) {
     setErrorMsg("");
 
     try {
-      const res = await fetch(`/api/rsvp/${meetupId}`, {
+      const res = await fetch(withBase(`/api/rsvp/${meetupId}`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

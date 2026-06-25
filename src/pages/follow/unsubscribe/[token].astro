@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Followers, Groups, eq } from "astro:db";
-import { groupUrl } from "../../../lib/utils";
+import { groupUrl, withBase } from "../../../lib/utils";
 
 const { token } = Astro.params;
-if (!token) return Astro.redirect("/groups");
+if (!token) return Astro.redirect(withBase("/groups"));
 
 const [follower] = await db.select().from(Followers).where(eq(Followers.token, token));
 
@@ -43,7 +43,7 @@ if (follower) {
             <div class="result-icon" aria-hidden="true">◎</div>
             <h1>Already unsubscribed</h1>
             <p>This unsubscribe link has already been used or doesn't exist.</p>
-            <a href="/groups" class="btn btn-ghost">Browse groups →</a>
+            <a href={withBase("/groups")} class="btn btn-ghost">Browse groups →</a>
           </>
         )}
 

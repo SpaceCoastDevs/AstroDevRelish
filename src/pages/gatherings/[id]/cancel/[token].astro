@@ -1,16 +1,16 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { db, Meetups, RSVPs, Groups, eq, and } from "astro:db";
-import { formatDate, formatTime, groupUrl } from "../../../../lib/utils";
+import { formatDate, formatTime, groupUrl, withBase } from "../../../../lib/utils";
 
 const { id, token } = Astro.params;
-if (!id || !token) return Astro.redirect("/groups");
+if (!id || !token) return Astro.redirect(withBase("/groups"));
 
 const [meetup] = await db.select().from(Meetups).where(eq(Meetups.id, id));
-if (!meetup) return Astro.redirect("/groups");
+if (!meetup) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.id, meetup.groupId));
-if (!group) return Astro.redirect("/groups");
+if (!group) return Astro.redirect(withBase("/groups"));
 
 // Verify token matches an RSVP for this event
 const [rsvp] = await db

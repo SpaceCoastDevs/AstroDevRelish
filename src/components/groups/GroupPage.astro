@@ -7,6 +7,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import MeetupCard from "../meetups/MeetupCard.astro";
 import { renderMarkdown, stripMarkdown } from "../../lib/markdown";
 import { getCategoryLabel } from "../../lib/categories";
+import { withBase } from "../../lib/utils";
 
 import type { Groups, Meetups } from "astro:db";
 
@@ -46,7 +47,7 @@ const ogDescription = (() => {
   <section class="group-hero">
     <div class="container">
       <div class="group-meta-row">
-        <a href="/groups" class="back-link">← All groups</a>
+        <a href={withBase("/groups")} class="back-link">← All groups</a>
         {isGroupClosed
           ? <span class="badge badge-closed">Closed</span>
           : <span class="badge badge-approved">Active group</span>
@@ -61,13 +62,13 @@ const ogDescription = (() => {
 
       <div class="group-details-row">
         {group.category && (
-          <a href={`/groups?category=${encodeURIComponent(group.category)}`} class="category-chip">
+          <a href={withBase(`/groups?category=${encodeURIComponent(group.category)}`)} class="category-chip">
             {getCategoryLabel(group.category) ?? group.category}
           </a>
         )}
         {location && <span class="group-location">📍 {location}</span>}
         {tagList.map(tag => (
-          <a href={`/groups?tag=${encodeURIComponent(tag)}`} class="tag-chip">{tag}</a>
+          <a href={withBase(`/groups?tag=${encodeURIComponent(tag)}`)} class="tag-chip">{tag}</a>
         ))}
       </div>
 
@@ -100,7 +101,7 @@ const ogDescription = (() => {
       <div class="group-desc prose" set:html={renderMarkdown(group.description)} />
 
       {!isGroupClosed && (
-        <a href={`/groups/${group.slug}/contact`} class="contact-link">
+        <a href={withBase(`/groups/${group.slug}/contact`)} class="contact-link">
           Have a question? Contact the organizers →
         </a>
       )}
@@ -116,11 +117,11 @@ const ogDescription = (() => {
             <span>Get notified by email when new gatherings are posted.{followerCount > 0 ? ` ${followerCount} ${followerCount === 1 ? "person follows" : "people follow"} this group.` : ""}</span>
           </div>
           <div class="follow-actions">
-            <form method="POST" action={`/groups/${group.slug}/follow`} class="follow-form">
+            <form method="POST" action={withBase(`/groups/${group.slug}/follow`)} class="follow-form">
               <input type="email" name="email" placeholder="your@email.com" required class="follow-input" />
               <button type="submit" class="btn btn-primary btn-sm">Follow →</button>
             </form>
-            <a href={`/groups/${group.slug}/rss.xml`} class="rss-link" title="RSS feed">
+            <a href={withBase(`/groups/${group.slug}/rss.xml`)} class="rss-link" title="RSS feed">
               RSS feed
             </a>
           </div>

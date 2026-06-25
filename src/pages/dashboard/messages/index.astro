@@ -2,8 +2,9 @@
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, ContactMessages, Groups } from "astro:db";
 import { eq, asc, desc } from "astro:db";
+import { withBase } from "../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 
 const isAdmin = user.role === "admin";
@@ -28,7 +29,7 @@ if (isAdmin) {
     .orderBy(asc(ContactMessages.read), desc(ContactMessages.createdAt));
   messages = rows as typeof messages;
 } else {
-  if (!user.groupId) return Astro.redirect("/dashboard");
+  if (!user.groupId) return Astro.redirect(withBase("/dashboard"));
   const rows = await db
     .select()
     .from(ContactMessages)
@@ -88,7 +89,7 @@ const justDeleted = Astro.url.searchParams.get("deleted") === "1";
           <p class="message-body">{msg.message}</p>
 
           <div class="message-actions">
-            <form method="POST" action={`/api/messages/${msg.id}/read`}>
+            <form method="POST" action={withBase(`/api/messages/${msg.id}/read`)}>
               <button type="submit" class="btn-action">
                 {msg.read ? "Mark as unread" : "Mark as read"}
               </button>
@@ -114,7 +115,7 @@ const justDeleted = Astro.url.searchParams.get("deleted") === "1";
           From <strong>{msg.name}</strong> ({msg.email}). This cannot be undone.
         </p>
         <div class="dialog-actions">
-          <form method="POST" action={`/api/messages/${msg.id}/delete`}>
+          <form method="POST" action={withBase(`/api/messages/${msg.id}/delete`)}>
             <button type="submit" class="btn btn-danger">Yes, delete it</button>
           </form>
           <button type="button" class="btn btn-ghost btn-cancel" data-dialog={`dialog-${msg.id}`}>

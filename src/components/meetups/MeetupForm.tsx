@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { withBase } from "../../lib/utils";
 
 interface Props {
   mode: "create" | "edit";
@@ -51,7 +52,7 @@ export default function MeetupForm({ mode, meetupId, initial }: Props) {
     setStatus("loading");
     setErrorMsg("");
 
-    const url = mode === "edit" ? `/api/gatherings/${meetupId}` : "/api/gatherings";
+    const url = withBase(mode === "edit" ? `/api/gatherings/${meetupId}` : "/api/gatherings");
     const method = mode === "edit" ? "PUT" : "POST";
 
     try {
@@ -70,7 +71,7 @@ export default function MeetupForm({ mode, meetupId, initial }: Props) {
 
       setStatus("success");
       if (mode === "create") {
-        window.location.href = "/dashboard/gatherings";
+        window.location.href = withBase("/dashboard/gatherings");
       }
     } catch {
       setErrorMsg("Network error. Please try again.");
@@ -82,7 +83,7 @@ export default function MeetupForm({ mode, meetupId, initial }: Props) {
     return (
       <div className="alert alert-success" role="alert">
         Gathering updated successfully!{" "}
-        <a href="/dashboard/gatherings">Back to gatherings</a>
+        <a href={withBase("/dashboard/gatherings")}>Back to gatherings</a>
       </div>
     );
   }
@@ -195,7 +196,7 @@ export default function MeetupForm({ mode, meetupId, initial }: Props) {
               ? "Create gathering →"
               : "Save changes →"}
         </button>
-        <a href="/dashboard/gatherings" className="btn btn-ghost">
+        <a href={withBase("/dashboard/gatherings")} className="btn btn-ghost">
           Cancel
         </a>
       </div>

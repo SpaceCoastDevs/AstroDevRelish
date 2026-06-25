@@ -2,9 +2,10 @@
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, Groups, User } from "astro:db";
 import { desc, isNotNull } from "astro:db";
+import { withBase } from "../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
-if (Astro.locals.user.role !== "admin") return Astro.redirect("/dashboard");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
+if (Astro.locals.user.role !== "admin") return Astro.redirect(withBase("/dashboard"));
 
 const allGroups = await db
   .select()
@@ -63,7 +64,7 @@ const grouped = allGroups.slice().sort((a, b) => {
             )}
           </div>
           <div class="cell-action">
-            <a href={`/admin/groups/${g.id}`} class="btn btn-ghost btn-sm">
+            <a href={withBase(`/admin/groups/${g.id}`)} class="btn btn-ghost btn-sm">
               Manage →
             </a>
           </div>

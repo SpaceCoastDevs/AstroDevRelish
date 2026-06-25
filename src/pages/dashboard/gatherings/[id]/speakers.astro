@@ -3,26 +3,26 @@ import DashboardLayout from "../../../../layouts/DashboardLayout.astro";
 import SpeakersManager from "../../../../components/meetups/SpeakersManager";
 import { db, Groups, Meetups, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers } from "astro:db";
 import { eq, and, asc, inArray } from "astro:db";
-import { formatDate } from "../../../../lib/utils";
+import { formatDate, withBase } from "../../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 const { id } = Astro.params;
 
-if (!id) return Astro.redirect("/dashboard/gatherings");
+if (!id) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 const [meetup] = await db
   .select()
   .from(Meetups)
   .where(and(eq(Meetups.id, id), eq(Meetups.groupId, group.id)));
 
-if (!meetup) return Astro.redirect("/dashboard/gatherings");
+if (!meetup) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 // Speakers — strip Date for island serialization
 const speakers = (
@@ -59,7 +59,7 @@ const sessions = sessionsRaw.map(({ createdAt: _c, ...s }) => ({
 
 <DashboardLayout title={`Speakers & Agenda — ${meetup.title}`}>
   <div class="page-header">
-    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <a href={withBase("/dashboard/gatherings")} class="back-link">← Back to gatherings</a>
     <div class="header-row">
       <div>
         <h1>Speakers &amp; Agenda</h1>
@@ -67,7 +67,7 @@ const sessions = sessionsRaw.map(({ createdAt: _c, ...s }) => ({
           {meetup.title} &bull; 📅 {formatDate(meetup.date)}
         </p>
       </div>
-      <a href={`/gatherings/${meetup.id}/rsvp`} class="btn btn-ghost btn-sm" target="_blank" rel="noopener">
+      <a href={withBase(`/gatherings/${meetup.id}/rsvp`)} class="btn btn-ghost btn-sm" target="_blank" rel="noopener">
         View public page ↗
       </a>
     </div>

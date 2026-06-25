@@ -2,19 +2,19 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Meetups, RSVPs, Groups, GatheringSpeakers, GatheringSessions, GatheringSessionSpeakers, count, eq, and } from "astro:db";
 import { asc, inArray } from "astro:db";
-import { formatDate, formatTime, spotsLeft, generateId, googleCalendarUrl, osmUrl, groupUrl } from "../../../lib/utils";
+import { absoluteUrl, formatDate, formatTime, spotsLeft, generateId, googleCalendarUrl, osmUrl, groupUrl, withBase } from "../../../lib/utils";
 import { renderMarkdown } from "../../../lib/markdown";
 
 const { id } = Astro.params;
 
-if (!id) return Astro.redirect("/groups");
+if (!id) return Astro.redirect(withBase("/groups"));
 
 const [meetup] = await db.select().from(Meetups).where(eq(Meetups.id, id));
-if (!meetup) return Astro.redirect("/groups");
+if (!meetup) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.id, meetup.groupId));
 if (!group || (group.status !== "approved" && group.status !== "closed")) {
-  return Astro.redirect("/groups");
+  return Astro.redirect(withBase("/groups"));
 }
 
 const isGroupClosed = group.status === "closed";
@@ -96,7 +96,7 @@ if (Astro.request.method === "POST") {
 
 // Bluesky share intent
 const bskyShareUrl = (() => {
-  const eventUrl = `${Astro.url.origin}/gatherings/${id}/rsvp`;
+  const eventUrl = absoluteUrl(Astro.url.origin, `/gatherings/${id}/rsvp`);
   const withHandle = group.blueskyHandle
     ? ` with @${group.blueskyHandle.replace(/^@/, "")}`
     : "";
@@ -122,7 +122,7 @@ const gcalUrl = googleCalendarUrl({
   address: meetup.address,
   description: `${meetup.description}\n\nHosted by ${group.name}`,
 });
-const icsUrl = `/api/calendar/${id}`;
+const icsUrl = withBase(`/api/calendar/${id}`);
 
 // Fetch speakers and sessions independently
 const speakers = await db
@@ -173,7 +173,7 @@ const descriptionHtml = renderMarkdown(meetup.description);
 
       <div class="event-header">
         <div class="breadcrumb">
-          <a href="/groups">Groups</a>
+          <a href={withBase("/groups")}>Groups</a>
           <span aria-hidden="true">→</span>
           <a href={groupUrl(group)}>{group.name}</a>
         </div>
@@ -329,8 +329,8 @@ const descriptionHtml = renderMarkdown(meetup.description);
                 <div class="cancel-link-section">
                   <p class="cancel-link-label">Need to cancel? Save this link:</p>
                   <div class="cancel-link-box">
-                    <code class="cancel-link-url">{Astro.url.origin}/gatherings/{id}/cancel/{result.cancelToken}</code>
-                    <a href={`/gatherings/${id}/cancel/${result.cancelToken}`} class="btn btn-ghost btn-sm">Cancel RSVP</a>
+                    <code class="cancel-link-url">{absoluteUrl(Astro.url.origin, `/gatherings/${id}/cancel/${result.cancelToken}`)}</code>
+                    <a href={withBase(`/gatherings/${id}/cancel/${result.cancelToken}`)} class="btn btn-ghost btn-sm">Cancel RSVP</a>
                   </div>
                   <p class="cancel-link-hint">Bookmark this or copy it somewhere safe.</p>
                 </div>
@@ -343,7 +343,7 @@ const descriptionHtml = renderMarkdown(meetup.description);
                   <div class="alert alert-info" role="alert">
                     <strong>Already registered!</strong> <strong>{result.email}</strong> is already on the list. See you there!
                     <p class="duplicate-cancel-hint">
-                      <a href={`/gatherings/${id}/cancel`}>Need to cancel? →</a>
+                      <a href={withBase(`/gatherings/${id}/cancel`)}>Need to cancel? →</a>
                     </p>
                   </div>
                 )}
@@ -393,7 +393,7 @@ const descriptionHtml = renderMarkdown(meetup.description);
                       </div>
 
                       <p class="privacy-notice">
-                        Your info is shared with <strong>{group.name}</strong> for attendance management only. <a href="/privacy">Privacy policy →</a>
+                        Your info is shared with <strong>{group.name}</strong> for attendance management only. <a href={withBase("/privacy")}>Privacy policy →</a>
                       </p>
 
                       <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
@@ -403,7 +403,7 @@ const descriptionHtml = renderMarkdown(meetup.description);
 
                     {!isPast && (
                       <p class="cancel-note">
-                        Already registered? <a href={`/gatherings/${id}/cancel`}>Cancel your RSVP</a>
+                        Already registered? <a href={withBase(`/gatherings/${id}/cancel`)}>Cancel your RSVP</a>
                       </p>
                     )}
                   </>

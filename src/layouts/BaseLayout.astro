@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import SiteNav from "../components/nav/SiteNav.astro";
 import SiteFooter from "../components/nav/SiteFooter.astro";
+import { absoluteUrl, withBase } from "../lib/utils";
 
 interface Props {
   title: string;
@@ -20,8 +21,8 @@ const user = Astro.locals.user;
 const fullTitle = `${title} — DevRel(ish)`;
 const canonicalUrl = Astro.url.href;
 const resolvedImage = ogImage
-  ? (ogImage.startsWith("http") ? ogImage : new URL(ogImage, Astro.url.origin).href)
-  : new URL("/og-image.svg", Astro.url.origin).href;
+  ? (ogImage.startsWith("http") ? ogImage : absoluteUrl(Astro.url.origin, ogImage))
+  : absoluteUrl(Astro.url.origin, "/og-image.svg");
 ---
 
 <!doctype html>
@@ -31,7 +32,7 @@ const resolvedImage = ogImage
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{fullTitle}</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <link rel="canonical" href={canonicalUrl} />
 
     <!-- Open Graph -->

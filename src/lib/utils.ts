@@ -1,6 +1,69 @@
 /** Return the best public URL for a group — custom short URL if set, canonical otherwise */
+const DEVRELISH_BASE = normalizeBase(import.meta.env.DEVRELISH_BASE);
+const DEVRELISH_SITE_URL = normalizeSiteUrl(import.meta.env.DEVRELISH_SITE_URL);
+const DEVRELISH_SITE_NAME = import.meta.env.DEVRELISH_SITE_NAME || "DevRel(ish)";
+const DEVRELISH_SUPPORT_EMAIL = import.meta.env.DEVRELISH_SUPPORT_EMAIL || "admin@example.com";
+
+function normalizeBase(base: string | undefined): string {
+  if (!base || base === "/") return "";
+  const normalized = base.startsWith("/") ? base : `/${base}`;
+  return normalized.replace(/\/+$/, "");
+}
+
+function normalizeSiteUrl(siteUrl: string | undefined): string {
+  if (!siteUrl) return "";
+  try {
+    const url = new URL(siteUrl);
+    return url.origin;
+  } catch {
+    return "";
+  }
+}
+
+export function withBase(path = "/"): string {
+  if (/^(?:[a-z][a-z\d+\-.]*:)?\/\//i.test(path) || path.startsWith("#") || path.startsWith("mailto:")) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  if (!DEVRELISH_BASE) return normalizedPath;
+  return normalizedPath === "/" ? DEVRELISH_BASE : `${DEVRELISH_BASE}${normalizedPath}`;
+}
+
+export function siteOrigin(origin: string): string {
+  return DEVRELISH_SITE_URL || origin;
+}
+
+export function absoluteUrl(origin: string, path = "/"): string {
+  return new URL(withBase(path), siteOrigin(origin)).href;
+}
+
+export function siteRootUrl(origin: string): string {
+  return siteOrigin(origin);
+}
+
+export function displaySiteUrl(origin: string, path = "/"): string {
+  const url = new URL(path === "/" ? siteRootUrl(origin) : absoluteUrl(origin, path));
+  const pathname = url.pathname === "/" ? "" : url.pathname.replace(/\/$/, "");
+  return `${url.host}${pathname}`;
+}
+
+export function displayBaseUrl(origin: string): string {
+  const url = new URL(absoluteUrl(origin, "/"));
+  const pathname = url.pathname === "/" ? "" : url.pathname.replace(/\/$/, "");
+  return `${url.host}${pathname}`;
+}
+
+export function siteName(): string {
+  return DEVRELISH_SITE_NAME;
+}
+
+export function supportEmail(): string {
+  return DEVRELISH_SUPPORT_EMAIL;
+}
+
 export function groupUrl(group: { slug: string; customSlug?: string | null }): string {
-  return group.customSlug ? `/${group.customSlug}` : `/groups/${group.slug}`;
+  return withBase(group.customSlug ? `/${group.customSlug}` : `/groups/${group.slug}`);
 }
 
 /** Convert a group name to a URL-safe slug */

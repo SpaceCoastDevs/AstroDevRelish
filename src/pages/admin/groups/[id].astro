@@ -2,21 +2,21 @@
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, Groups, GroupInvites, User } from "astro:db";
 import { eq } from "astro:db";
-import { generateId, groupUrl } from "../../../lib/utils";
+import { absoluteUrl, generateId, groupUrl, withBase } from "../../../lib/utils";
 import { renderMarkdown } from "../../../lib/markdown";
 import { sendApprovalNotice } from "../../../lib/email";
 import { getCategoryLabel } from "../../../lib/categories";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
-if (Astro.locals.user.role !== "admin") return Astro.redirect("/dashboard");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
+if (Astro.locals.user.role !== "admin") return Astro.redirect(withBase("/dashboard"));
 
 const user = Astro.locals.user;
 
 const { id } = Astro.params;
-if (!id) return Astro.redirect("/admin");
+if (!id) return Astro.redirect(withBase("/admin"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.id, id));
-if (!group) return Astro.redirect("/admin");
+if (!group) return Astro.redirect(withBase("/admin"));
 
 let successMsg = "";
 let errorMsg = "";
@@ -35,7 +35,7 @@ if (Astro.request.method === "POST") {
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
-    approvalInviteUrl = `${Astro.url.origin}/invite/${token}`;
+    approvalInviteUrl = absoluteUrl(Astro.url.origin, `/invite/${token}`);
   } else {
     const statusMap: Record<string, string> = {
       approve: "approved",
@@ -46,7 +46,7 @@ if (Astro.request.method === "POST") {
 
     if (action && action in statusMap) {
       try {
-        const res = await fetch(`${Astro.url.origin}/api/groups/${id}/status`, {
+        const res = await fetch(absoluteUrl(Astro.url.origin, `/api/groups/${id}/status`), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -75,7 +75,7 @@ if (Astro.request.method === "POST") {
               createdAt: new Date(),
               expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
-            approvalInviteUrl = `${Astro.url.origin}/invite/${token}`;
+            approvalInviteUrl = absoluteUrl(Astro.url.origin, `/invite/${token}`);
             successMsg = `Group approved. Invite link generated and sent to ${group.contactEmail}.`;
             sendApprovalNotice({
               to: group.contactEmail,
@@ -103,12 +103,12 @@ const [activeInviteRow] = await db
   .from(GroupInvites)
   .where(eq(GroupInvites.groupId, id));
 const activeInvite = activeInviteRow && activeInviteRow.expiresAt > now ? activeInviteRow : null;
-const existingInviteUrl = activeInvite ? `${Astro.url.origin}/invite/${activeInvite.id}` : "";
+const existingInviteUrl = activeInvite ? absoluteUrl(Astro.url.origin, `/invite/${activeInvite.id}`) : "";
 ---
 
 <DashboardLayout title={`Review — ${group.name}`}>
   <div class="page-header">
-    <a href="/admin" class="back-link">← Back to admin</a>
+    <a href={withBase("/admin")} class="back-link">← Back to admin</a>
     <div class="header-row">
       <h1>{group.name}</h1>
       <span class:list={["badge", `badge-${group.status}`]}>

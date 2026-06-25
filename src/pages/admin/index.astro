@@ -4,9 +4,10 @@ import { db, Groups } from "astro:db";
 import { eq, desc } from "astro:db";
 import { stripMarkdown } from "../../lib/markdown";
 import { getCategoryLabel } from "../../lib/categories";
+import { withBase } from "../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
-if (Astro.locals.user.role !== "admin") return Astro.redirect("/dashboard");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
+if (Astro.locals.user.role !== "admin") return Astro.redirect(withBase("/dashboard"));
 
 const pendingGroups = await db
   .select()
@@ -48,7 +49,7 @@ const pendingGroups = await db
             <p class="group-desc">{(({ t }) => t.length > 200 ? t.slice(0, 200) + "…" : t)({ t: stripMarkdown(g.description) })}</p>
           </div>
           <div class="group-actions">
-            <a href={`/admin/groups/${g.id}`} class="btn btn-ghost btn-sm">
+            <a href={withBase(`/admin/groups/${g.id}`)} class="btn btn-ghost btn-sm">
               Review →
             </a>
           </div>

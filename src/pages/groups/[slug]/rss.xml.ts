@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { db, Groups, Meetups, eq, and, gte, asc } from "astro:db";
 import { stripMarkdown } from "../../../lib/markdown";
+import { absoluteUrl } from "../../../lib/utils";
 
 export const GET: APIRoute = async ({ params, url }) => {
   const { slug } = params;
@@ -22,7 +23,7 @@ export const GET: APIRoute = async ({ params, url }) => {
     .limit(20);
 
   const origin = url.origin;
-  const groupUrl = `${origin}/groups/${slug}`;
+  const groupUrl = absoluteUrl(origin, `/groups/${slug}`);
 
   function escapeXml(str: string): string {
     return str
@@ -35,7 +36,7 @@ export const GET: APIRoute = async ({ params, url }) => {
 
   const items = meetups.map(m => {
     const dateStr = m.date.toUTCString();
-    const rsvpUrl = `${origin}/gatherings/${m.id}/rsvp`;
+    const rsvpUrl = absoluteUrl(origin, `/gatherings/${m.id}/rsvp`);
     const locationParts = [m.city, m.country].filter(Boolean).join(", ");
     const where = m.eventContext
       ? locationParts ? `${m.eventContext} · ${locationParts}` : m.eventContext
@@ -60,7 +61,7 @@ export const GET: APIRoute = async ({ params, url }) => {
     <link>${escapeXml(groupUrl)}</link>
     <description>${escapeXml(group.tagline ?? stripMarkdown(group.description).slice(0, 200))}</description>
     <language>en</language>
-    <atom:link href="${escapeXml(`${origin}/groups/${slug}/rss.xml`)}" rel="self" type="application/rss+xml" />
+    <atom:link href="${escapeXml(absoluteUrl(origin, `/groups/${slug}/rss.xml`))}" rel="self" type="application/rss+xml" />
     ${items}
   </channel>
 </rss>`;

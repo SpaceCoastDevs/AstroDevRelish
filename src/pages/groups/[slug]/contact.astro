@@ -1,12 +1,12 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Groups, ContactMessages, User, eq, and } from "astro:db";
-import { generateId, groupUrl } from "../../../lib/utils";
+import { absoluteUrl, generateId, groupUrl, withBase } from "../../../lib/utils";
 import { stripMarkdown } from "../../../lib/markdown";
 import { sendContactMessageAlert } from "../../../lib/email";
 
 const { slug } = Astro.params;
-if (!slug) return Astro.redirect("/groups");
+if (!slug) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db
   .select()
@@ -14,7 +14,7 @@ const [group] = await db
   .where(eq(Groups.slug, slug));
 
 if (!group || (group.status !== "approved" && group.status !== "closed")) {
-  return Astro.redirect("/groups");
+  return Astro.redirect(withBase("/groups"));
 }
 
 const isGroupClosed = group.status === "closed";
@@ -62,7 +62,7 @@ if (!isGroupClosed && Astro.request.method === "POST") {
         sendContactMessageAlert({
           organizers,
           groupName: group.name,
-          dashboardUrl: `${Astro.url.origin}/dashboard/messages`,
+          dashboardUrl: absoluteUrl(Astro.url.origin, "/dashboard/messages"),
         }).catch(e => console.error("[contact alert] email error:", e));
       }
 
@@ -80,7 +80,7 @@ if (!isGroupClosed && Astro.request.method === "POST") {
     <div class="container contact-layout">
       <div class="contact-main">
         <div class="breadcrumb">
-          <a href="/groups">Groups</a>
+          <a href={withBase("/groups")}>Groups</a>
           <span aria-hidden="true">→</span>
           <a href={groupUrl(group)}>{group.name}</a>
           <span aria-hidden="true">→</span>
@@ -156,7 +156,7 @@ if (!isGroupClosed && Astro.request.method === "POST") {
           <a href={groupUrl(group)} class="btn btn-ghost btn-sm" style="margin-top: 0.75rem;">View group →</a>
         </div>
         <p class="contact-note">
-          Your email is only shared with the group organizer. We don't use it for marketing. <a href="/privacy">Privacy policy →</a>
+          Your email is only shared with the group organizer. We don't use it for marketing. <a href={withBase("/privacy")}>Privacy policy →</a>
         </p>
       </aside>
     </div>

@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import GroupCard from "../../components/groups/GroupCard.astro";
 import { db, Groups, Meetups, count, eq, and, gte, asc, inArray } from "astro:db";
 import { CATEGORIES, getCategoryLabel } from "../../lib/categories";
+import { withBase } from "../../lib/utils";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -68,10 +69,10 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
           <div class="filter-row">
             <span class="filter-label">Category:</span>
             <div class="filter-chips">
-              <a href="/groups" class:list={["filter-chip", { active: !activeCategory }]}>All</a>
+              <a href={withBase("/groups")} class:list={["filter-chip", { active: !activeCategory }]}>All</a>
               {presentCategories.map(c => (
                 <a
-                  href={`/groups?category=${encodeURIComponent(c.slug)}`}
+                  href={withBase(`/groups?category=${encodeURIComponent(c.slug)}`)}
                   class:list={["filter-chip", { active: c.slug === activeCategory }]}
                 >{c.label}</a>
               ))}
@@ -84,7 +85,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
             <span class="filter-label">Topic:</span>
             <div class="filter-chips">
               <a
-                href={activeCategory ? `/groups?category=${encodeURIComponent(activeCategory)}` : "/groups"}
+                href={withBase(activeCategory ? `/groups?category=${encodeURIComponent(activeCategory)}` : "/groups")}
                 class:list={["filter-chip", { active: !activeTag }]}
               >All</a>
               {allTags.map(tag => {
@@ -93,7 +94,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
                 params.set("tag", tag);
                 return (
                   <a
-                    href={`/groups?${params}`}
+                    href={withBase(`/groups?${params}`)}
                     class:list={["filter-chip", { active: tag === activeTag }]}
                   >{tag}</a>
                 );
@@ -113,7 +114,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
           {activeCategory && <>Category: <strong>{getCategoryLabel(activeCategory) ?? activeCategory}</strong></>}
           {activeCategory && activeTag && " · "}
           {activeTag && <>Topic: <strong>{activeTag}</strong></>}
-          {" · "}<a href="/groups">Clear filters</a>
+          {" · "}<a href={withBase("/groups")}>Clear filters</a>
         </p>
       )}
 
@@ -124,13 +125,13 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
             {(activeCategory || activeTag) ? (
               <>
                 <h2>No groups match those filters</h2>
-                <p><a href="/groups">Browse all groups</a> or start one!</p>
+                <p><a href={withBase("/groups")}>Browse all groups</a> or start one!</p>
               </>
             ) : (
               <>
                 <h2>No groups yet!</h2>
                 <p>Be the first to start a group.</p>
-                <a href="/groups/register" class="btn btn-primary">Start a group →</a>
+                <a href={withBase("/groups/register")} class="btn btn-primary">Start a group →</a>
               </>
             )}
           </div>
@@ -162,7 +163,7 @@ const upcomingCounts: Record<string, number> = Object.fromEntries(upcomingRows.m
     <div class="container">
       <p>
         Want to organize gatherings for your community?{" "}
-        <a href="/groups/register">Start a group →</a>
+        <a href={withBase("/groups/register")}>Start a group →</a>
       </p>
     </div>
   </section>

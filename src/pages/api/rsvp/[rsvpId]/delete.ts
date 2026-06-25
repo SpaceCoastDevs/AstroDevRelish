@@ -1,10 +1,11 @@
 import type { APIRoute } from "astro";
 import { db, RSVPs, Meetups, Groups } from "astro:db";
 import { eq } from "astro:db";
+import { withBase } from "../../../../lib/utils";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ params, locals, request }) => {
+export const POST: APIRoute = async ({ params, locals }) => {
   if (!locals.user) return redirect("/login");
 
   const { rsvpId } = params;
@@ -35,5 +36,5 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
 };
 
 function redirect(location: string) {
-  return new Response(null, { status: 302, headers: { location } });
+  return new Response(null, { status: 302, headers: { location: withBase(location) } });
 }

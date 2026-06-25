@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { withBase } from "../../lib/utils";
 
 interface RssEvent {
   title: string;
@@ -54,7 +55,7 @@ export default function ImportMeetupForm() {
     setFetching(true);
     setFetchError("");
     try {
-      const res = await fetch("/api/import/meetup-rss", {
+      const res = await fetch(withBase("/api/import/meetup-rss"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
@@ -93,7 +94,7 @@ export default function ImportMeetupForm() {
     const outcomes: ImportResult[] = [];
     for (const d of selected) {
       try {
-        const res = await fetch("/api/gatherings", {
+        const res = await fetch(withBase("/api/gatherings"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -146,7 +147,7 @@ export default function ImportMeetupForm() {
             <button type="submit" className="btn btn-primary" disabled={fetching}>
               {fetching ? "Fetching events…" : "Fetch upcoming events →"}
             </button>
-            <a href="/dashboard/gatherings" className="btn btn-ghost">Cancel</a>
+            <a href={withBase("/dashboard/gatherings")} className="btn btn-ghost">Cancel</a>
           </div>
         </form>
       </div>
@@ -175,7 +176,7 @@ export default function ImportMeetupForm() {
               </ul>
             </div>
           )}
-          <a href="/dashboard/gatherings" className="btn btn-primary">Go to gatherings →</a>
+          <a href={withBase("/dashboard/gatherings")} className="btn btn-primary">Go to gatherings →</a>
         </div>
       </div>
     );

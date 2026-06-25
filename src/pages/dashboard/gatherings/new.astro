@@ -1,17 +1,17 @@
 ---
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { db, Groups, Meetups, Followers, eq, and } from "astro:db";
-import { generateId } from "../../../lib/utils";
+import { absoluteUrl, generateId, withBase } from "../../../lib/utils";
 import { sendGatheringNotification } from "../../../lib/email";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 type FormError = { type: "error"; message: string };
 let error: FormError | null = null;
@@ -99,20 +99,20 @@ if (Astro.request.method === "POST") {
           country: vals.country || null,
           eventContext: vals.eventContext || null,
         },
-        rsvpUrl: `${Astro.url.origin}/gatherings/${newId}/rsvp`,
+        rsvpUrl: absoluteUrl(Astro.url.origin, `/gatherings/${newId}/rsvp`),
       }).catch(e => console.error("[gathering notify] email error:", e));
     }
 
-    return Astro.redirect("/dashboard/gatherings?created=1");
+    return Astro.redirect(withBase("/dashboard/gatherings?created=1"));
   }
 }
 ---
 
 <DashboardLayout title="New Gathering">
   <div class="page-header">
-    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <a href={withBase("/dashboard/gatherings")} class="back-link">← Back to gatherings</a>
     <h1>Schedule a gathering</h1>
-    <p>Fill in the details for your next gathering. Migrating from Meetup? <a href="/dashboard/gatherings/import" class="import-hint">Import events instead →</a></p>
+    <p>Fill in the details for your next gathering. Migrating from Meetup? <a href={withBase("/dashboard/gatherings/import")} class="import-hint">Import events instead →</a></p>
   </div>
 
   <div class="form-wrap">
@@ -184,7 +184,7 @@ if (Astro.request.method === "POST") {
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Create gathering →</button>
-        <a href="/dashboard/gatherings" class="btn btn-ghost">Cancel</a>
+        <a href={withBase("/dashboard/gatherings")} class="btn btn-ghost">Cancel</a>
       </div>
     </form>
   </div>

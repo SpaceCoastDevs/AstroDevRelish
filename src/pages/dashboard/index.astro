@@ -1,9 +1,9 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { db, Groups, Meetups, Followers, count, eq, and, gte, asc } from "astro:db";
-import { groupUrl } from "../../lib/utils";
+import { groupUrl, withBase } from "../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 const justJoined = Astro.url.searchParams.get("joined") === "1";
 
@@ -58,7 +58,7 @@ if (group) {
             </p>
             <p>
               In the meantime, feel free to{" "}
-              <a href="/groups">browse other groups</a> to see what's happening in the community.
+              <a href={withBase("/groups")}>browse other groups</a> to see what's happening in the community.
             </p>
           </div>
         </div>
@@ -86,7 +86,7 @@ if (group) {
               <div class="stat-value">{followerCount}</div>
               <div class="stat-label">Followers</div>
             </div>
-            <a href="/dashboard/gatherings/new" class="stat-card stat-card-cta">
+            <a href={withBase("/dashboard/gatherings/new")} class="stat-card stat-card-cta">
               <div class="stat-cta-icon" aria-hidden="true">+</div>
               <div class="stat-label">Schedule a gathering</div>
             </a>
@@ -96,7 +96,7 @@ if (group) {
             <div class="upcoming-meetups">
               <div class="section-row">
                 <h3>Upcoming gatherings</h3>
-                <a href="/dashboard/gatherings" class="link-sm">View all →</a>
+                <a href={withBase("/dashboard/gatherings")} class="link-sm">View all →</a>
               </div>
               <div class="meetup-list">
                 {upcomingMeetups.map((m) => (
@@ -110,13 +110,13 @@ if (group) {
                       <span class="meetup-row-venue">📍 {m.venue}</span>
                     </div>
                     <div class="meetup-row-actions">
-                      <a href={`/dashboard/gatherings/${m.id}/attendees`} class="btn btn-ghost btn-sm">
+                      <a href={withBase(`/dashboard/gatherings/${m.id}/attendees`)} class="btn btn-ghost btn-sm">
                         Attendees
                       </a>
-                      <a href={`/dashboard/gatherings/${m.id}/speakers`} class="btn btn-ghost btn-sm">
+                      <a href={withBase(`/dashboard/gatherings/${m.id}/speakers`)} class="btn btn-ghost btn-sm">
                         Speakers
                       </a>
-                      <a href={`/dashboard/gatherings/${m.id}/edit`} class="btn btn-ghost btn-sm">
+                      <a href={withBase(`/dashboard/gatherings/${m.id}/edit`)} class="btn btn-ghost btn-sm">
                         Edit
                       </a>
                     </div>

@@ -1,0 +1,14 @@
+import type { APIRoute } from "astro";
+
+const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#e8704a"/>
+  <text x="50" y="72" font-family="Georgia, serif" font-size="62" font-weight="bold" fill="white" text-anchor="middle">D</text>
+</svg>`;
+
+export const GET: APIRoute = () =>
+  new Response(favicon, {
+    headers: {
+      "Content-Type": "image/svg+xml; charset=utf-8",
+      "Cache-Control": "public, max-age=604800",
+    },
+  });

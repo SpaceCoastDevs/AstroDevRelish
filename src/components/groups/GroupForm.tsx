@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { withBase } from "../../lib/utils";
 
 interface FormData {
   name: string;
@@ -36,7 +37,7 @@ export default function GroupForm() {
 
     try {
       const honeypotEl = document.querySelector<HTMLInputElement>(".group-form .hp-field");
-      const res = await fetch("/api/groups/register", {
+      const res = await fetch(withBase("/api/groups/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -71,7 +72,7 @@ export default function GroupForm() {
         </p>
         <p>
           In the meantime, check out the{" "}
-          <a href="/groups">existing groups</a> to see if there's one near you.
+          <a href={withBase("/groups")}>existing groups</a> to see if there's one near you.
         </p>
       </div>
     );

@@ -1,4 +1,8 @@
 ---
+import { displaySiteUrl, siteRootUrl, withBase } from "../../lib/utils";
+
+const rootUrl = siteRootUrl(Astro.url.origin);
+const rootDisplayUrl = displaySiteUrl(Astro.url.origin, "/");
 ---
 
 <footer class="site-footer">
@@ -9,18 +13,18 @@
     </div>
     <nav class="footer-nav" aria-label="Footer navigation">
       <ul role="list">
-        <li><a href="/groups">Find Groups</a></li>
-        <li><a href="/groups/register">Start a Group</a></li>
-        <li><a href="/how-it-works">How It Works</a></li>
-        <li><a href="/login">Group Manager Sign In</a></li>
-        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href={withBase("/groups")}>Find Groups</a></li>
+        <li><a href={withBase("/groups/register")}>Start a Group</a></li>
+        <li><a href={withBase("/how-it-works")}>How It Works</a></li>
+        <li><a href={withBase("/login")}>Group Manager Sign In</a></li>
+        <li><a href={withBase("/privacy")}>Privacy Policy</a></li>
       </ul>
     </nav>
   </div>
   <div class="footer-bottom container">
     <p>
       Made with care for the DevRel community &bull;
-      <a href="https://devrelish.tech">devrelish.tech</a>
+      <a href={rootUrl}>{rootDisplayUrl}</a>
     </p>
   </div>
 </footer>

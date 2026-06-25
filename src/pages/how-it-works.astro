@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { displaySiteUrl, withBase } from "../lib/utils";
+
+const groupsDisplayUrl = displaySiteUrl(Astro.url.origin, "/groups");
+const shortUrlExample = displaySiteUrl(Astro.url.origin, "/sf-user-group");
 ---
 
 <BaseLayout
@@ -35,7 +39,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Browse groups</h3>
             <p>
-              Head to <a href="/groups">devrelish.tech/groups</a> to see all approved communities.
+              Head to <a href={withBase("/groups")}>{groupsDisplayUrl}</a> to see all approved communities.
               Filter by category or tag to find groups relevant to your role or interests.
             </p>
           </div>
@@ -103,7 +107,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Register your group</h3>
             <p>
-              Fill out the <a href="/groups/register">group registration form</a>.
+              Fill out the <a href={withBase("/groups/register")}>group registration form</a>.
               Provide your group's name, a description (50 characters minimum, Markdown supported),
               a contact email, and optionally a category, tags, and location.
               Submitted groups start with a <strong>pending</strong> status.
@@ -129,7 +133,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Set up your group page</h3>
             <p>
-              Once you've claimed your group, log into the <a href="/dashboard/group">organizer dashboard</a>.
+              Once you've claimed your group, log into the <a href={withBase("/dashboard/group")}>organizer dashboard</a>.
               You can edit your description, tagline, category, tags, location, and social links at any time.
               Your group name is permanent — contact support if you need it changed.
             </p>
@@ -141,8 +145,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Add a custom short URL</h3>
             <p>
-              In the <a href="/dashboard/group">My Group</a> settings you can choose a custom short URL for your group,
-              such as <code>devrelish.tech/sf-user-group</code>.
+              In the <a href={withBase("/dashboard/group")}>My Group</a> settings you can choose a custom short URL for your group,
+              such as <code>{shortUrlExample}</code>.
               This makes it easier to share at events, on slides, or in email signatures.
               Short URLs redirect to your group's canonical page and can be changed at any time.
             </p>
@@ -154,7 +158,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Announce a gathering</h3>
             <p>
-              Go to <a href="/dashboard/gatherings">Gatherings</a> in the dashboard and click <strong>New gathering</strong>.
+              Go to <a href={withBase("/dashboard/gatherings")}>Gatherings</a> in the dashboard and click <strong>New gathering</strong>.
               Add a title, description, date, time, venue, and capacity.
               Gatherings are automatically listed on your public group page once created.
             </p>
@@ -190,7 +194,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <div class="step-content">
             <h3>Add co-organizers</h3>
             <p>
-              Share the load by inviting co-organizers via the <a href="/dashboard/team">Team</a> page.
+              Share the load by inviting co-organizers via the <a href={withBase("/dashboard/team")}>Team</a> page.
               Co-organizers have the same dashboard access as the primary organizer.
             </p>
           </div>
@@ -202,7 +206,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <h3>Respond to messages</h3>
             <p>
               Community members can send your group a message through the contact form on your public page.
-              Messages land in your <a href="/dashboard/messages">Messages</a> inbox in the dashboard.
+              Messages land in your <a href={withBase("/dashboard/messages")}>Messages</a> inbox in the dashboard.
             </p>
           </div>
         </div>
@@ -268,8 +272,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <h2>Ready to get started?</h2>
       <p>Browse existing communities or register your own group today.</p>
       <div class="cta-actions">
-        <a href="/groups" class="btn btn-primary">Browse groups</a>
-        <a href="/groups/register" class="btn btn-ghost">Register a group</a>
+        <a href={withBase("/groups")} class="btn btn-primary">Browse groups</a>
+        <a href={withBase("/groups/register")} class="btn btn-ghost">Register a group</a>
       </div>
     </section>
 

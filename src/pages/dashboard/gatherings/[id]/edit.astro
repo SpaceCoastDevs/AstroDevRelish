@@ -2,25 +2,26 @@
 import DashboardLayout from "../../../../layouts/DashboardLayout.astro";
 import { db, Groups, Meetups } from "astro:db";
 import { eq, and } from "astro:db";
+import { withBase } from "../../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 const { id } = Astro.params;
 
-if (!id) return Astro.redirect("/dashboard/gatherings");
+if (!id) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 const [meetup] = await db
   .select()
   .from(Meetups)
   .where(and(eq(Meetups.id, id), eq(Meetups.groupId, group.id)));
 
-if (!meetup) return Astro.redirect("/dashboard/gatherings");
+if (!meetup) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 type Result = { type: "success" } | { type: "error"; message: string };
 let result: Result | null = null;
@@ -93,14 +94,14 @@ if (Astro.request.method === "POST") {
 
 <DashboardLayout title="Edit Gathering">
   <div class="page-header">
-    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <a href={withBase("/dashboard/gatherings")} class="back-link">← Back to gatherings</a>
     <h1>Edit gathering</h1>
   </div>
 
   <div class="form-wrap">
     {result?.type === "success" && (
       <div class="alert alert-success" role="status">
-        Gathering updated successfully! <a href="/dashboard/gatherings">Back to gatherings</a>
+        Gathering updated successfully! <a href={withBase("/dashboard/gatherings")}>Back to gatherings</a>
       </div>
     )}
 
@@ -172,7 +173,7 @@ if (Astro.request.method === "POST") {
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save changes →</button>
-        <a href="/dashboard/gatherings" class="btn btn-ghost">Cancel</a>
+        <a href={withBase("/dashboard/gatherings")} class="btn btn-ghost">Cancel</a>
       </div>
     </form>
   </div>

@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../../lib/utils";
+
 interface Props {
   user: App.Locals["user"];
 }
@@ -13,7 +15,7 @@ function isActive(href: string) {
 
 <header class="site-header">
   <nav class="container nav-inner" aria-label="Main navigation">
-    <a href="/" class="nav-logo" aria-label="DevRel(ish) home">
+    <a href={withBase("/")} class="nav-logo" aria-label="DevRel(ish) home">
       <span class="logo-text">DevRel<span class="logo-ish">(ish)</span></span>
       <span class="beta-badge">beta</span>
     </a>
@@ -26,17 +28,17 @@ function isActive(href: string) {
 
     <ul class="nav-links" id="nav-links" role="list">
       <li>
-        <a href="/gatherings" class:list={["nav-link", { active: isActive("/gatherings") }]}>
+        <a href={withBase("/gatherings")} class:list={["nav-link", { active: isActive(withBase("/gatherings")) }]}>
           Gatherings
         </a>
       </li>
       <li>
-        <a href="/groups" class:list={["nav-link", { active: isActive("/groups") && !isActive("/groups/register") }]}>
+        <a href={withBase("/groups")} class:list={["nav-link", { active: isActive(withBase("/groups")) && !isActive(withBase("/groups/register")) }]}>
           Groups
         </a>
       </li>
       <li>
-        <a href="/groups/register" class:list={["nav-link", { active: isActive("/groups/register") }]}>
+        <a href={withBase("/groups/register")} class:list={["nav-link", { active: isActive(withBase("/groups/register")) }]}>
           Start a Group
         </a>
       </li>
@@ -45,19 +47,19 @@ function isActive(href: string) {
           <>
             <li>
               <a
-                href={user.role === "admin" ? "/admin" : "/dashboard"}
-                class:list={["nav-link", { active: isActive(user.role === "admin" ? "/admin" : "/dashboard") }]}
+                href={withBase(user.role === "admin" ? "/admin" : "/dashboard")}
+                class:list={["nav-link", { active: isActive(withBase(user.role === "admin" ? "/admin" : "/dashboard")) }]}
               >
                 {user.role === "admin" ? "Admin" : "My Group"}
               </a>
             </li>
             <li>
-              <a href="/logout" class="nav-link">Sign out</a>
+              <a href={withBase("/logout")} class="nav-link">Sign out</a>
             </li>
           </>
         ) : (
           <li>
-            <a href="/login" class:list={["nav-link nav-link-cta", { active: isActive("/login") }]}>
+            <a href={withBase("/login")} class:list={["nav-link nav-link-cta", { active: isActive(withBase("/login")) }]}>
               Sign in
             </a>
           </li>

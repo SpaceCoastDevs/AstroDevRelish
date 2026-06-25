@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { db, ContactMessages, Groups } from "astro:db";
 import { eq } from "astro:db";
+import { withBase } from "../../../../lib/utils";
 
 export const prerender = false;
 
@@ -31,5 +32,5 @@ export const POST: APIRoute = async ({ params, locals }) => {
 };
 
 function redirect(location: string) {
-  return new Response(null, { status: 302, headers: { location } });
+  return new Response(null, { status: 302, headers: { location: withBase(location) } });
 }

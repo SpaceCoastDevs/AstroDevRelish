@@ -11,7 +11,7 @@ export default async function seed() {
     {
       id: adminId,
       name: "Site Admin",
-      email: "admin@devrelish.tech",
+      email: "admin@example.com",
       emailVerified: true,
       role: "admin",
       createdAt: new Date(),

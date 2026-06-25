@@ -2,26 +2,26 @@
 import DashboardLayout from "../../../../layouts/DashboardLayout.astro";
 import { db, Groups, Meetups, RSVPs } from "astro:db";
 import { eq, and, asc } from "astro:db";
-import { formatDate, formatTime } from "../../../../lib/utils";
+import { formatDate, formatTime, withBase } from "../../../../lib/utils";
 
-if (!Astro.locals.user) return Astro.redirect("/login");
+if (!Astro.locals.user) return Astro.redirect(withBase("/login"));
 const user = Astro.locals.user;
 const { id } = Astro.params;
 
-if (!id) return Astro.redirect("/dashboard/gatherings");
+if (!id) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 const [group] = user.groupId
   ? await db.select().from(Groups).where(eq(Groups.id, user.groupId))
   : [];
 
-if (!group) return Astro.redirect("/dashboard");
+if (!group) return Astro.redirect(withBase("/dashboard"));
 
 const [meetup] = await db
   .select()
   .from(Meetups)
   .where(and(eq(Meetups.id, id), eq(Meetups.groupId, group.id)));
 
-if (!meetup) return Astro.redirect("/dashboard/gatherings");
+if (!meetup) return Astro.redirect(withBase("/dashboard/gatherings"));
 
 const attendees = await db
   .select()
@@ -34,7 +34,7 @@ const justRemoved = Astro.url.searchParams.get("removed") === "1";
 
 <DashboardLayout title={`Attendees — ${meetup.title}`}>
   <div class="page-header">
-    <a href="/dashboard/gatherings" class="back-link">← Back to gatherings</a>
+    <a href={withBase("/dashboard/gatherings")} class="back-link">← Back to gatherings</a>
     <div class="header-row">
       <div>
         <h1>{meetup.title}</h1>
@@ -44,7 +44,7 @@ const justRemoved = Astro.url.searchParams.get("removed") === "1";
       </div>
       {attendees.length > 0 && (
         <a
-          href={`/api/gatherings/${id}/attendees.csv`}
+          href={withBase(`/api/gatherings/${id}/attendees.csv`)}
           download
           class="btn btn-ghost btn-sm"
           title="Download attendee list as CSV"
@@ -84,7 +84,7 @@ const justRemoved = Astro.url.searchParams.get("removed") === "1";
       <div class="empty-state">
         <p>No RSVPs yet. Share the gathering link to start getting sign-ups!</p>
         <div class="share-link">
-          <code>{`/gatherings/${meetup.id}/rsvp`}</code>
+          <code>{withBase(`/gatherings/${meetup.id}/rsvp`)}</code>
         </div>
       </div>
     ) : (
@@ -147,7 +147,7 @@ const justRemoved = Astro.url.searchParams.get("removed") === "1";
           list for <strong>{meetup.title}</strong>. This cannot be undone.
         </p>
         <div class="dialog-actions">
-          <form method="POST" action={`/api/rsvp/${a.id}/delete`}>
+          <form method="POST" action={withBase(`/api/rsvp/${a.id}/delete`)}>
             <button type="submit" class="btn btn-danger">Yes, remove them</button>
           </form>
           <button type="button" class="btn btn-ghost btn-cancel" data-dialog={`dialog-${a.id}`}>

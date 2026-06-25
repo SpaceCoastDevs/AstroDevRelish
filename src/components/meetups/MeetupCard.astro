@@ -1,5 +1,5 @@
 ---
-import { formatDate, formatTime, spotsLeft, osmUrl } from "../../lib/utils";
+import { formatDate, formatTime, spotsLeft, osmUrl, withBase } from "../../lib/utils";
 import { renderMarkdown } from "../../lib/markdown";
 
 interface Props {
@@ -64,7 +64,7 @@ const descHtml = renderMarkdown(description);
       )}
     </div>
     {!isCanceled && !groupClosed && !isFull && (
-      <a href={`/gatherings/${id}/rsvp`} class="btn btn-primary btn-sm">
+      <a href={withBase(`/gatherings/${id}/rsvp`)} class="btn btn-primary btn-sm">
         RSVP →
       </a>
     )}

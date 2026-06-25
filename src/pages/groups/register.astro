@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { db, Groups } from "astro:db";
 import { eq } from "astro:db";
-import { generateId, slugify } from "../../lib/utils";
+import { generateId, slugify, withBase } from "../../lib/utils";
 import { CATEGORIES, getCategoryLabel } from "../../lib/categories";
 
 type Result =
@@ -110,7 +110,7 @@ if (Astro.request.method === "POST") {
               and be in touch at <strong>{result.email}</strong> shortly.
             </p>
             <p>
-              In the meantime, check out the <a href="/groups">existing groups</a> to see if
+              In the meantime, check out the <a href={withBase("/groups")}>existing groups</a> to see if
               there's one near you.
             </p>
           </div>
@@ -266,7 +266,7 @@ if (Astro.request.method === "POST") {
             your group's events. Sharing, selling, or marketing to attendees outside of
             event-related communications is not permitted.
           </p>
-          <a href="/privacy#organizer-rules" class="sidebar-link">Read the full organizer rules →</a>
+          <a href={withBase("/privacy#organizer-rules")} class="sidebar-link">Read the full organizer rules →</a>
         </div>
       </aside>
     </div>

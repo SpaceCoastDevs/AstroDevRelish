@@ -1,14 +1,15 @@
 ---
 import GroupPage from "../../components/groups/GroupPage.astro";
 import { db, Groups, Meetups, RSVPs, Followers, count, eq, and, gte, asc } from "astro:db";
+import { withBase } from "../../lib/utils";
 
 const { slug } = Astro.params;
-if (!slug) return Astro.redirect("/groups");
+if (!slug) return Astro.redirect(withBase("/groups"));
 
 const [group] = await db.select().from(Groups).where(eq(Groups.slug, slug));
 
 if (!group || (group.status !== "approved" && group.status !== "closed")) {
-  return Astro.redirect("/groups");
+  return Astro.redirect(withBase("/groups"));
 }
 
 const today = new Date();
